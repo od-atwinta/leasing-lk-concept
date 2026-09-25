@@ -93,7 +93,7 @@ h3{font-size:14px;margin:0 0 8px;color:var(--navy)}
 .user:hover{background:#fff}
 .ava{width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}
 .user .nm{font-size:12.5px;font-weight:600;color:var(--navy);line-height:1.2}.user .rl{font-size:11px;color:var(--grey)}
-.content{padding:24px 26px 90px;max-width:1280px;width:100%}
+.content{padding:24px 26px 90px;width:100%}
 .burger{display:none}
 @media (max-width:900px){
   .side{position:fixed;left:0;top:0;z-index:50;transform:translateX(-100%);transition:transform .2s}
@@ -185,7 +185,9 @@ table.t td.r,table.t th.r{text-align:right}
 .doc table{width:100%;border-collapse:collapse;margin-top:10px}.doc td,.doc th{border:1px solid #CBD8E3;padding:5px 7px;font-size:11.5px}
 .qr{width:160px;height:160px;flex:none}
 /* демо-панель */
-.demo{position:fixed;right:18px;bottom:18px;z-index:150;font-size:12px}
+.demo{position:fixed;right:18px;bottom:64px;z-index:150;font-size:12px}
+.concept-note{position:fixed;right:18px;bottom:18px;z-index:140;pointer-events:none;background:rgba(252,228,236,.72);color:#8A3B55;border:1px solid rgba(214,142,168,.35);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:600;box-shadow:0 4px 14px rgba(34,56,77,.08);backdrop-filter:none}
+@media (max-width:640px){.concept-note{left:14px;right:14px;text-align:center;font-size:11px}}
 .demo .fab{background:#fff;border:1px solid var(--line);color:var(--navy);border-radius:22px;padding:8px 14px;font-weight:700;box-shadow:var(--sh);display:flex;gap:8px;align-items:center}
 .demo .pn{position:absolute;bottom:46px;right:0;width:300px;background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.2);padding:16px}
 .demo .pn h3{margin-bottom:10px}
@@ -194,7 +196,7 @@ table.t td.r,table.t th.r{text-align:right}
 .tg:after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s}
 .tg.on{background:var(--ok)}.tg.on:after{left:19px}
 .tg.off-red{background:var(--bad)}
-@media (max-width:900px){.demo{right:14px;bottom:14px}}
+@media (max-width:900px){.demo{right:14px}}
 </style>
 </head>
 <body>
@@ -202,6 +204,7 @@ table.t td.r,table.t th.r{text-align:right}
 <div id="ovl"></div>
 <div class="toasts" id="toasts"></div>
 <div class="demo" id="demo"></div>
+<div class="concept-note">Демонстрационный концепт прототипа. Создано в Атвинте</div>
 <script>
 "use strict";
 /* =====================================================================
@@ -584,7 +587,6 @@ function renderAuth(p) {
       <div id="lgErr"></div>
       <button class="btn block" id="lgBtn" type="submit">Войти</button>
       <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:12.5px"><a id="forgot">Забыли пароль?</a><a href="#/register">Регистрация компании</a></div>
-      <div class="hint">Демо: войдите как руководитель — или как бухгалтер <a id="asBuh">buh@severtrans.demo</a>, у которого ограничены права и договоры.</div>
     </form>`;
   } else {
     const r = S.reg || (S.reg = { step: 1, inn: "1650000000", dog: "ДЛ-117/24", fio: "Иванов Андрей Петрович", email: "director@severtrans.demo", phone: "+7 900 000-00-01" });
@@ -592,20 +594,18 @@ function renderAuth(p) {
     const bar = `<div class="steps">${[1, 2, 3].map(i => `<i class="${i <= st ? "on" : ""}"></i>`).join("")}</div>`;
     if (st === 1) body = `${bar}<form id="fReg1"><p class="small muted" style="margin:0 0 12px">Кабинет создаётся на компанию и её руководителя. Сотрудников руководитель добавит сам внутри кабинета.</p>
       <div class="row"><div class="field"><label for="r1">ИНН компании</label><input class="inp" id="r1" value="${esc(r.inn)}" inputmode="numeric" required></div>
-      <div class="field"><label for="r2">Номер действующего договора</label><input class="inp" id="r2" value="${esc(r.dog)}" required></div></div>
+      <div class="field"><label for="r2">Номер договора</label><input class="inp" id="r2" value="${esc(r.dog)}" required></div></div>
       <div class="field"><label for="r3">ФИО руководителя</label><input class="inp" id="r3" value="${esc(r.fio)}" required></div>
       <div class="row"><div class="field"><label for="r4">E-mail</label><input class="inp" id="r4" type="email" value="${esc(r.email)}" required></div>
       <div class="field"><label for="r5">Телефон</label><input class="inp" id="r5" value="${esc(r.phone)}" required></div></div>
-      <label class="chk"><input type="checkbox" id="r6" checked> Согласен с <a>политикой обработки персональных данных</a> и <a>правилами пользования кабинетом</a></label>
+      <label class="chk"><input type="checkbox" id="r6"><span>Согласен с <a>политикой обработки персональных данных</a> и <a>правилами пользования кабинетом</a></span></label>
       <div id="rErr"></div>
       <button class="btn block" id="rBtn" type="submit">Продолжить</button>
-      <div class="hint">Демо: данные уже заполнены. Попробуйте изменить ИНН — увидите, что будет, если компания не найдена в 1С.</div>
       <div style="text-align:center;margin-top:10px;font-size:12.5px"><a href="#/login">У меня уже есть кабинет</a></div></form>`;
     if (st === 2) body = `${bar}<form id="fReg2"><div class="alert ok" style="margin-bottom:14px">✓ Компания ${esc(S.company.name)} и договор ${esc(r.dog)} найдены в базе Восток-лизинга</div>
       <p class="small" style="margin:0 0 12px">Отправили код подтверждения на ${esc(r.phone)}.</p>
       <div class="field"><label for="c1">Код из SMS</label><input class="inp" id="c1" inputmode="numeric" maxlength="4" placeholder="••••" style="letter-spacing:.5em;font-size:18px;text-align:center"></div>
-      <div id="cErr"></div><button class="btn block" type="submit">Подтвердить</button>
-      <div class="hint">Демо: код — 1234</div></form>`;
+      <div id="cErr"></div><button class="btn block" type="submit">Подтвердить</button></form>`;
     if (st === 3) body = `${bar}<form id="fReg3"><p class="small" style="margin:0 0 12px">Придумайте пароль для входа.</p>
       <div class="field"><label for="p1">Пароль</label><input class="inp" id="p1" type="password" value="demo-demo"></div>
       <div class="field"><label for="p2">Повторите пароль</label><input class="inp" id="p2" type="password" value="demo-demo"></div>
@@ -626,7 +626,6 @@ function renderAuth(p) {
     $("#lgBtn").innerHTML = '<span class="spin"></span> Входим…';
     setTimeout(() => { S.session = { uid: u.id }; save(); location.hash = "#/home"; render(); toast("Добро пожаловать", u.short); }, 700);
   });
-  $("#asBuh")?.addEventListener("click", () => { $("#lg1").value = "buh@severtrans.demo"; });
   $("#forgot")?.addEventListener("click", () => toast("Восстановление пароля", "Ссылка для сброса пароля отправлена на e-mail (демо)"));
   $("#fReg1")?.addEventListener("submit", e => {
     e.preventDefault(); const r = S.reg;
@@ -641,7 +640,7 @@ function renderAuth(p) {
       r.step = 2; save(); renderAuth(["register"]);
     }, 1400);
   });
-  $("#fReg2")?.addEventListener("submit", e => { e.preventDefault(); if ($("#c1").value !== "1234") { $("#cErr").innerHTML = `<div class="err">Неверный код. Демо-код — 1234.</div>`; return; } S.reg.step = 3; save(); renderAuth(["register"]); });
+  $("#fReg2")?.addEventListener("submit", e => { e.preventDefault(); if (!/^\d{4}$/.test($("#c1").value.trim())) { $("#cErr").innerHTML = `<div class="err">Введите 4 цифры из SMS.</div>`; return; } S.reg.step = 3; save(); renderAuth(["register"]); });
   $("#fReg3")?.addEventListener("submit", e => { e.preventDefault(); if ($("#p1").value !== $("#p2").value) { toast("Пароли не совпадают"); return; } S.reg = null; S.session = { uid: "u1" }; save(); location.hash = "#/home"; render(); toast("Кабинет компании создан", "Вы — владелец кабинета. Добавьте сотрудников в разделе «Компания и сотрудники»."); });
 }
 
@@ -1063,7 +1062,9 @@ function viewScan(title) {
    ДЕМО-ПАНЕЛЬ
    ===================================================================== */
 let demoOpen = false;
+const DEMO_PANEL = new URLSearchParams(location.search).has("demo");
 function renderDemo() {
+  if (!DEMO_PANEL) { $("#demo").innerHTML = ""; return; }
   const s = S.sync; const inQ = S.jobs.length;
   $("#demo").innerHTML = `${demoOpen ? `<div class="pn"><h3>Демо-режим</h3>
     <div class="sw"><button class="tg ${s.online ? "on" : "off-red"}" onclick="toggle1C()" aria-label="Связь с 1С"></button><div><b>${s.online ? "1С на связи" : "1С недоступна"}</b><div class="muted">Выключите, чтобы увидеть работу при сбое</div></div></div>
