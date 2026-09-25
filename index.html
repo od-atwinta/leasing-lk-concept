@@ -138,7 +138,7 @@ table.t td.r,table.t th.r{text-align:right}
 .list .it:last-child{border-bottom:0}
 .ic{width:36px;height:36px;border-radius:10px;background:var(--pale);color:var(--blue);display:flex;align-items:center;justify-content:center;flex:none}
 .ic svg{width:18px;height:18px}
-.qa{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.qa{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
 @media (max-width:900px){.qa{grid-template-columns:1fr 1fr}}
 .qa button{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:8px;color:var(--navy);font-weight:600;font-size:13px;transition:border .15s,box-shadow .15s}
 .qa button:hover{border-color:var(--sky);box-shadow:var(--sh)}
@@ -186,6 +186,7 @@ table.t td.r,table.t th.r{text-align:right}
 .qr{width:160px;height:160px;flex:none}
 /* демо-панель */
 .demo{position:fixed;right:18px;bottom:64px;z-index:150;font-size:12px}
+.concept-note a{pointer-events:auto;color:#8A3B55;text-decoration:underline;cursor:pointer}
 .concept-note{position:fixed;right:18px;bottom:18px;z-index:140;pointer-events:none;background:rgba(252,228,236,.72);color:#8A3B55;border:1px solid rgba(214,142,168,.35);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:600;box-shadow:0 4px 14px rgba(34,56,77,.08);backdrop-filter:none}
 @media (max-width:640px){.concept-note{left:14px;right:14px;text-align:center;font-size:11px}}
 .demo .fab{background:#fff;border:1px solid var(--line);color:var(--navy);border-radius:22px;padding:8px 14px;font-weight:700;box-shadow:var(--sh);display:flex;gap:8px;align-items:center}
@@ -204,7 +205,7 @@ table.t td.r,table.t th.r{text-align:right}
 <div id="ovl"></div>
 <div class="toasts" id="toasts"></div>
 <div class="demo" id="demo"></div>
-<div class="concept-note">Демонстрационный концепт прототипа. Создано в Атвинте</div>
+<div class="concept-note">Демонстрационный концепт прототипа. Создано в Атвинте<span id="noteExit"> · <a onclick="logout()">Перейти на экран авторизации</a></span></div>
 <script>
 "use strict";
 /* =====================================================================
@@ -515,7 +516,7 @@ function newRequest(type, title, cid, extra = {}) {
 const NAV = [
   ["home", "Главная", "home", null], ["contracts", "Договоры", "file", "contracts"], ["payments", "Платежи", "card", "payments"],
   ["documents", "Документы", "docs", "docs"], ["requests", "Запросы", "req", "requests"], ["insurance", "Страхование", "shield", "insurance"],
-  ["notifications", "Уведомления", "bell", null], ["company", "Компания и сотрудники", "users", "staff"], ["profile", "Профиль", "user", null],
+  ["notifications", "Уведомления", "bell", null], ["company", "Сотрудники", "users", "staff"], ["profile", "Профиль", "user", null],
 ];
 const parts = () => (location.hash.replace(/^#\/?/, "") || "home").split("/").map(decodeURIComponent);
 let lastHash = "";
@@ -532,6 +533,7 @@ function render(soft) {
   const focusVal = focusId ? document.activeElement.value : null;
   $("#app").innerHTML = shell(html, title);
   bindShell();
+  const ne = $("#noteExit"); if (ne) ne.style.display = "";
   if (soft) { window.scrollTo(0, scrollY); if (focusId && $("#" + focusId)) { const el = $("#" + focusId); el.value = focusVal; el.focus(); } }
   else window.scrollTo(0, 0);
   lastHash = location.hash; renderDemo();
@@ -578,6 +580,7 @@ function refreshLive() { document.querySelectorAll("[data-ago]").forEach(el => e
    ВХОД И РЕГИСТРАЦИЯ
    ===================================================================== */
 function renderAuth(p) {
+  const ne = $("#noteExit"); if (ne) ne.style.display = "none";
   const mode = p[0] === "register" ? "register" : "login";
   let body;
   if (mode === "login") {
@@ -605,7 +608,8 @@ function renderAuth(p) {
     if (st === 2) body = `${bar}<form id="fReg2"><div class="alert ok" style="margin-bottom:14px">✓ Компания ${esc(S.company.name)} и договор ${esc(r.dog)} найдены в базе Восток-лизинга</div>
       <p class="small" style="margin:0 0 12px">Отправили код подтверждения на ${esc(r.phone)}.</p>
       <div class="field"><label for="c1">Код из SMS</label><input class="inp" id="c1" inputmode="numeric" maxlength="4" placeholder="••••" style="letter-spacing:.5em;font-size:18px;text-align:center"></div>
-      <div id="cErr"></div><button class="btn block" type="submit">Подтвердить</button></form>`;
+      <div id="cErr"></div><button class="btn block" type="submit">Подтвердить</button>
+      <div class="hint">Для демо-версии код — 1234</div></form>`;
     if (st === 3) body = `${bar}<form id="fReg3"><p class="small" style="margin:0 0 12px">Придумайте пароль для входа.</p>
       <div class="field"><label for="p1">Пароль</label><input class="inp" id="p1" type="password" value="demo-demo"></div>
       <div class="field"><label for="p2">Повторите пароль</label><input class="inp" id="p2" type="password" value="demo-demo"></div>
@@ -640,7 +644,7 @@ function renderAuth(p) {
       r.step = 2; save(); renderAuth(["register"]);
     }, 1400);
   });
-  $("#fReg2")?.addEventListener("submit", e => { e.preventDefault(); if (!/^\d{4}$/.test($("#c1").value.trim())) { $("#cErr").innerHTML = `<div class="err">Введите 4 цифры из SMS.</div>`; return; } S.reg.step = 3; save(); renderAuth(["register"]); });
+  $("#fReg2")?.addEventListener("submit", e => { e.preventDefault(); if ($("#c1").value.trim() !== "1234") { $("#cErr").innerHTML = `<div class="err">Неверный код. Для демо-версии код — 1234.</div>`; return; } S.reg.step = 3; save(); renderAuth(["register"]); });
   $("#fReg3")?.addEventListener("submit", e => { e.preventDefault(); if ($("#p1").value !== $("#p2").value) { toast("Пароли не совпадают"); return; } S.reg = null; S.session = { uid: "u1" }; save(); location.hash = "#/home"; render(); toast("Кабинет компании создан", "Вы — владелец кабинета. Добавьте сотрудников в разделе «Компания и сотрудники»."); });
 }
 
@@ -680,6 +684,7 @@ VIEWS.home = () => {
     ${can("docs") ? `<button onclick="modalAct()">${ic("act", 'width="22" height="22" style="color:var(--blue)"')}Акт сверки<span>Сформирует 1С за пару минут</span></button>` : ""}
     ${can("requests") ? `<button onclick="modalRequest('spravka')">${ic("req", 'width="22" height="22" style="color:var(--blue)"')}Справка о задолженности<span>Автоматически из 1С</span></button>` : ""}
     ${can("docs") ? `<button onclick="modalOriginals()">${ic("mail", 'width="22" height="22" style="color:var(--blue)"')}Запросить оригиналы<span>Почтой или через ЭДО</span></button>` : ""}
+    ${can("staff") ? `<button onclick="location.hash='#/company';setTimeout(()=>modalUser(),50)">${ic("users", 'width="22" height="22" style="color:var(--blue)"')}Добавить сотрудника<span>Доступ с нужными правами</span></button>` : ""}
   </div>`;
   html += `<div class="grid g2">
     <div class="card"><div class="hd" style="margin-bottom:6px"><h2 style="margin:0">Предстоящие платежи</h2><span class="sp"></span>${can("payments") ? `<a class="small" href="#/payments/calendar">Календарь →</a>` : ""}</div>
@@ -930,7 +935,7 @@ const RIGHTS = { contracts: "Договоры", payments: "Платежи и с�
 const ROLE_TPL = { "Бухгалтер": { contracts: 1, payments: 1, docs: 1, requests: 1, insurance: 0, staff: 0 }, "Юрист": { contracts: 1, payments: 0, docs: 1, requests: 1, insurance: 0, staff: 0 }, "Ответственный за технику": { contracts: 1, payments: 0, docs: 0, requests: 1, insurance: 1, staff: 0 } };
 VIEWS.company = () => {
   const c = S.company;
-  const html = `<div class="hd"><div><h1>Компания и сотрудники</h1><div class="muted">Кабинет принадлежит компании. Доступ сотрудникам даёт только руководитель.</div></div><span class="sp"></span><button class="btn" onclick="modalUser()">${ic("plus", 'width="15" height="15"')} Пригласить сотрудника</button></div>
+  const html = `<div class="hd"><div><h1>Сотрудники компании</h1><div class="muted">Кабинет принадлежит компании. Руководитель добавляет сотрудников и настраивает им права.</div></div><span class="sp"></span><button class="btn" onclick="modalUser()">${ic("plus", 'width="15" height="15"')} Добавить сотрудника</button></div>
   <div class="card" style="margin-bottom:16px"><div class="hd" style="margin-bottom:10px"><h2 style="margin:0">Реквизиты</h2><span class="sp"></span><span class="small muted">из 1С · изменить через персонального менеджера</span></div><div class="kv">
     <div><div class="k">Наименование</div><div class="v">${esc(c.name)}</div></div><div><div class="k">ИНН / КПП</div><div class="v">${c.inn} / ${c.kpp}</div></div><div><div class="k">ОГРН</div><div class="v">${c.ogrn}</div></div><div><div class="k">Юридический адрес</div><div class="v">${esc(c.addr)}</div></div>
     <div><div class="k">Владелец кабинета</div><div class="v">${esc(S.users.find(u => u.owner).fio)}</div></div><div><div class="k">ЭДО</div><div class="v">${c.edo.on ? "Подключено · " + esc(c.edo.op) : "Не подключено"}</div></div></div></div>
@@ -938,18 +943,18 @@ VIEWS.company = () => {
   ${S.users.map(u => `<tr><td><b style="color:var(--navy)">${esc(u.fio)}</b><div class="small muted">${esc(u.email)}</div></td><td>${esc(u.role)}${u.owner ? ' <span class="tag info">владелец</span>' : ""}</td><td class="small">${Object.keys(RIGHTS).filter(k => u.rights[k]).map(k => RIGHTS[k]).join(", ")}</td><td class="small">${u.scope === "all" ? "Все" : u.scope.join(", ")}</td><td>${u.status === "active" ? '<span class="tag ok">Активен</span>' : u.status === "invited" ? '<span class="tag warn">Приглашён</span>' : '<span class="tag grey">Заблокирован</span>'}</td>
   <td class="r nowrap">${u.owner ? "" : `<button class="btn ghost sm" onclick="modalUser('${u.id}')">Права</button> ${u.status === "blocked" ? `<button class="btn ghost sm" onclick="setUser('${u.id}','active')">Разблокировать</button>` : `<button class="btn ghost sm" style="color:var(--bad)" onclick="setUser('${u.id}','blocked')">Заблокировать</button>`}`}</td></tr>`).join("")}</tbody></table></div>
   <div class="hint" style="margin-top:14px">Сотрудники не могут зарегистрироваться сами. Руководитель приглашает их по e-mail, выбирает права и договоры. Смена владельца кабинета — через Восток-лизинг по заявлению компании.</div>`;
-  return { title: "Компания и сотрудники", html };
+  return { title: "Сотрудники", html };
 };
 function setUser(id, st) { const u = S.users.find(u => u.id === id); u.status = st; save(); render(true); toast(st === "blocked" ? "Доступ заблокирован" : "Доступ восстановлен", u.fio); }
 function modalUser(id) {
   const u = id ? S.users.find(x => x.id === id) : { fio: "", email: "", role: "Бухгалтер", rights: { ...ROLE_TPL["Бухгалтер"] }, scope: "all" };
-  openModal(id ? "Права сотрудника" : "Пригласить сотрудника", `<form id="fU">
+  openModal(id ? "Права сотрудника" : "Добавить сотрудника", `<form id="fU">
     ${id ? `<p><b>${esc(u.fio)}</b><br><span class="small muted">${esc(u.email)}</span></p>` : `<div class="field"><label for="u1">ФИО</label><input class="inp" id="u1" required placeholder="Сидоров Павел Олегович"></div><div class="field"><label for="u2">E-mail</label><input class="inp" id="u2" type="email" required placeholder="pavel@company.ru"></div>`}
     <div class="field"><label for="u3">Роль</label><select class="sel" id="u3">${Object.keys(ROLE_TPL).map(r => `<option ${u.role === r ? "selected" : ""}>${r}</option>`).join("")}<option ${!ROLE_TPL[u.role] ? "selected" : ""}>Свой набор прав</option></select></div>
     <div class="field"><label>Права</label>${Object.entries(RIGHTS).filter(([k]) => k !== "staff").map(([k, l]) => `<label class="chk"><input type="checkbox" name="rt" value="${k}" ${u.rights[k] ? "checked" : ""}> ${l}</label>`).join("")}</div>
     <div class="field"><label>Доступ к договорам</label><label class="chk"><input type="radio" name="sc" value="all" ${u.scope === "all" ? "checked" : ""}> Все договоры компании</label><label class="chk"><input type="radio" name="sc" value="some" ${u.scope !== "all" ? "checked" : ""}> Только выбранные:</label>
       <div style="padding-left:24px">${S.contracts.map(c => `<label class="chk"><input type="checkbox" name="cs" value="${c.id}" ${u.scope === "all" || u.scope.includes(c.id) ? "checked" : ""}> ${c.id} · ${esc(c.subjects[0].name)}</label>`).join("")}</div></div></form>`,
-    `<button class="btn sec" onclick="closeModal()">Отмена</button><button class="btn" onclick="saveUser('${id || ""}')">${id ? "Сохранить" : "Отправить приглашение"}</button>`);
+    `<button class="btn sec" onclick="closeModal()">Отмена</button><button class="btn" onclick="saveUser('${id || ""}')">${id ? "Сохранить" : "Добавить и отправить приглашение"}</button>`);
   $("#u3").addEventListener("change", e => { const t = ROLE_TPL[e.target.value]; if (t) document.querySelectorAll("[name=rt]").forEach(ch => ch.checked = !!t[ch.value]); });
 }
 function saveUser(id) {
@@ -983,7 +988,7 @@ VIEWS.profile = () => {
       <h2 style="margin-top:24px">Электронный документооборот</h2><div class="alert ok" style="margin:0">ЭДО подключено: ${esc(S.company.edo.op)}<br>Идентификатор ${S.company.edo.id}</div></div></div>`;
   return { title: "Профиль", html };
 };
-function logout() { S.session = null; save(); location.hash = "#/login"; render(); }
+function logout() { S.session = null; S.reg = null; closeModal(); save(); if (location.search.includes("as=")) { location.href = location.pathname + (location.search.includes("demo") ? "?demo" : "") + "#/login"; return; } location.hash = "#/login"; render(); }
 
 /* =====================================================================
    МОДАЛКИ
