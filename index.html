@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="yandex" content="noindex, nofollow">
+<title>Личный кабинет лизингополучателя — концепт</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#22384D; --navy2:#1A2C3D; --ink:#34495E; --blue:#2F6F9F; --blue2:#255A82; --sky:#78A9CC; --pale:#EDF4F8; --pale2:#F6F9FB;
+  --line:#D5E1EA; --grey:#6B7A89; --bg:#F3F6F9; --white:#fff; --ok:#2E8B57; --okbg:#E7F4EC; --warn:#C77A12; --warnbg:#FDF3E3; --bad:#C0392B; --badbg:#FBEAE8;
+  --r:12px; --sh:0 1px 2px rgba(34,56,77,.06),0 4px 16px rgba(34,56,77,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Montserrat,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:14px;line-height:1.45}
+a{color:var(--blue);text-decoration:none;cursor:pointer}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+h1{font-size:22px;margin:0 0 4px;color:var(--navy)}
+h2{font-size:16px;margin:0 0 12px;color:var(--navy)}
+h3{font-size:14px;margin:0 0 8px;color:var(--navy)}
+.muted{color:var(--grey)} .small{font-size:12px} .nowrap{white-space:nowrap}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- ВХОД: полноэкранная анимация ---------- */
+.auth{position:fixed;inset:0;background:radial-gradient(120% 90% at 20% 10%,#2A4760 0%,var(--navy) 45%,var(--navy2) 100%);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:16px}
+.auth svg.paths{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.auth svg.paths path{fill:none;stroke-linecap:round;animation-name:flow;animation-timing-function:linear;animation-iteration-count:infinite}
+@keyframes flow{
+  0%{stroke-dasharray:.3 1;stroke-dashoffset:0;opacity:.3}
+  50%{stroke-dasharray:1 0;stroke-dashoffset:-1;opacity:.6}
+  100%{stroke-dasharray:.3 1;stroke-dashoffset:0;opacity:.3}
+}
+@media (prefers-reduced-motion:reduce){.auth svg.paths path{animation:none;opacity:.45}}
+.auth-card{position:relative;z-index:2;width:100%;max-width:430px;background:rgba(255,255,255,.97);border-radius:18px;padding:30px 30px 24px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;color:var(--navy);letter-spacing:.04em}
+.brand .t{font-size:15px}
+.brand .s{font-size:10.5px;font-weight:500;color:var(--grey);letter-spacing:.02em}
+.auth-tabs{display:flex;gap:4px;background:var(--pale);border-radius:10px;padding:4px;margin:20px 0 18px}
+.auth-tabs button{flex:1;border:0;background:transparent;padding:8px;border-radius:8px;font-weight:600;color:var(--grey)}
+.auth-tabs button.on{background:#fff;color:var(--navy);box-shadow:var(--sh)}
+.auth-hero{position:absolute;left:5vw;bottom:6vh;z-index:1;color:#fff;max-width:520px}
+.auth-hero h2{color:#fff;font-size:28px;line-height:1.2;margin:0 0 10px}
+.auth-hero p{color:#BFD6E8;margin:0}
+@media (max-width:1100px){.auth-hero{display:none}}
+@media (min-width:1101px){.auth{justify-content:flex-end;padding-right:9vw}.auth-hero{top:50%;bottom:auto;transform:translateY(-50%);left:7vw;max-width:460px}.auth-hero h2{font-size:34px}}
+.steps{display:flex;gap:6px;margin-bottom:14px}.steps i{flex:1;height:4px;border-radius:4px;background:var(--line)}.steps i.on{background:var(--blue)}
+
+/* ---------- ФОРМЫ ---------- */
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--navy);margin-bottom:5px}
+.inp,.sel,textarea.inp{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;background:#fff;outline:none;transition:border .15s}
+.inp:focus,.sel:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,111,159,.12)}
+.row{display:flex;gap:12px;flex-wrap:wrap}.row>*{flex:1;min-width:160px}
+.chk{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;margin:8px 0}
+.chk input{margin-top:3px}
+.hint{background:var(--pale);border-radius:9px;padding:10px 12px;font-size:12px;color:var(--ink);margin:10px 0}
+.err{background:var(--badbg);color:var(--bad);border-radius:9px;padding:10px 12px;font-size:12.5px;margin:10px 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid transparent;border-radius:9px;padding:9px 16px;font-weight:600;font-size:13px;background:var(--blue);color:#fff;transition:background .15s,opacity .15s;white-space:nowrap}
+.btn:hover{background:var(--blue2)}
+.btn.sec{background:#fff;color:var(--navy);border-color:var(--line)}.btn.sec:hover{background:var(--pale2)}
+.btn.ghost{background:transparent;color:var(--blue);padding:6px 8px}.btn.ghost:hover{background:var(--pale)}
+.btn.danger{background:#fff;color:var(--bad);border-color:#EBC5C0}
+.btn.block{width:100%}.btn.sm{padding:6px 11px;font-size:12px}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp 0.8s linear infinite;display:inline-block}
+.spin.dark{border-color:rgba(47,111,159,.25);border-top-color:var(--blue)}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ---------- КАРКАС ---------- */
+.app{display:flex;min-height:100vh}
+.side{width:248px;flex:none;background:var(--navy);color:#DCE8F2;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.side svg.paths{position:absolute;inset:0;width:100%;height:100%;opacity:.5;pointer-events:none}
+.side .in{position:relative;display:flex;flex-direction:column;height:100%;padding:18px 12px}
+.side .brand{color:#fff;padding:0 8px 16px}.side .brand .s{color:#9FBBD3}
+.nav a{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;color:#DCE8F2;font-weight:500;font-size:13.5px;margin-bottom:2px}
+.nav a:hover{background:rgba(255,255,255,.07)}
+.nav a.on{background:rgba(120,169,204,.22);color:#fff;font-weight:600}
+.nav a svg{width:18px;height:18px;flex:none;opacity:.9}
+.nav .cnt{margin-left:auto;background:var(--sky);color:var(--navy);font-size:11px;font-weight:700;border-radius:10px;padding:1px 7px}
+.mgr{margin-top:auto;background:rgba(255,255,255,.07);border-radius:11px;padding:12px;font-size:12px}
+.mgr b{color:#fff;display:block;font-size:13px}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{position:sticky;top:0;z-index:20;background:rgba(243,246,249,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;padding:12px 26px}
+.top .ttl{font-weight:700;color:var(--navy);font-size:15px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sync{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:12px;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok);flex:none}
+.dot.off{background:var(--bad)}.dot.busy{background:var(--warn);animation:pl 1s infinite}
+@keyframes pl{50%{opacity:.3}}
+.ib{position:relative;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;color:var(--navy)}
+.ib svg{width:18px;height:18px}
+.ib .badge{position:absolute;top:-4px;right:-4px;background:var(--bad);color:#fff;font-size:10px;font-weight:700;border-radius:9px;padding:1px 5px;min-width:17px;text-align:center}
+.user{display:flex;align-items:center;gap:9px;cursor:pointer;padding:4px 8px;border-radius:10px}
+.user:hover{background:#fff}
+.ava{width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}
+.user .nm{font-size:12.5px;font-weight:600;color:var(--navy);line-height:1.2}.user .rl{font-size:11px;color:var(--grey)}
+.content{padding:24px 26px 90px;max-width:1280px;width:100%}
+.burger{display:none}
+@media (max-width:900px){
+  .side{position:fixed;left:0;top:0;z-index:50;transform:translateX(-100%);transition:transform .2s}
+  .side.open{transform:none;box-shadow:0 0 0 100vmax rgba(0,0,0,.35)}
+  .burger{display:flex}
+  .top{padding:10px 14px}.content{padding:16px 14px 90px}
+  .user .txt,.sync .lbl{display:none}
+}
+
+/* ---------- КОМПОНЕНТЫ ---------- */
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
+@media (max-width:1100px){.g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.g4,.g3,.g2{grid-template-columns:1fr}}
+.card{background:#fff;border-radius:var(--r);box-shadow:var(--sh);padding:18px}
+.card.pad0{padding:0}
+.kpi .l{font-size:12px;color:var(--grey);font-weight:500}
+.kpi .v{font-size:22px;font-weight:700;color:var(--navy);margin:6px 0 2px}
+.kpi .d{font-size:12px;color:var(--grey)}
+.kpi .v.bad{color:var(--bad)} .kpi .v.ok{color:var(--ok)}
+.hd{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.hd .sp{flex:1}
+.crumbs{font-size:12px;color:var(--grey);margin-bottom:6px}.crumbs a{color:var(--grey)}.crumbs a:hover{color:var(--blue)}
+.alert{display:flex;gap:12px;align-items:center;border-radius:11px;padding:12px 16px;margin-bottom:12px;font-size:13px}
+.alert.warn{background:var(--warnbg);color:#7A4A06}.alert.bad{background:var(--badbg);color:#7C241B}.alert.info{background:var(--pale);color:var(--navy)}.alert.ok{background:var(--okbg);color:#1F5E3A}
+.alert .sp{flex:1}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;border-radius:20px;padding:3px 9px;white-space:nowrap}
+.tag.ok{background:var(--okbg);color:var(--ok)}.tag.warn{background:var(--warnbg);color:var(--warn)}.tag.bad{background:var(--badbg);color:var(--bad)}.tag.info{background:var(--pale);color:var(--blue)}.tag.grey{background:#EEF1F4;color:var(--grey)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px;overflow-x:auto}
+.tabs a{padding:10px 14px;color:var(--grey);font-weight:600;font-size:13px;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs a.on{color:var(--navy);border-color:var(--blue)}
+table.t{width:100%;border-collapse:collapse;font-size:13px}
+table.t th{text-align:left;font-size:11.5px;color:var(--grey);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--pale2);white-space:nowrap}
+table.t td{padding:11px 12px;border-bottom:1px solid #EDF2F6;vertical-align:middle}
+table.t tr.click{cursor:pointer}table.t tr.click:hover td{background:var(--pale2)}
+table.t td.r,table.t th.r{text-align:right}
+.tw{overflow-x:auto}
+.kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px 20px}
+.kv .k{font-size:11.5px;color:var(--grey)}.kv .v{font-weight:600;color:var(--navy);margin-top:2px}
+.prog{height:8px;background:var(--pale);border-radius:8px;overflow:hidden}.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--sky),var(--blue));border-radius:8px}
+.list .it{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #EDF2F6}
+.list .it:last-child{border-bottom:0}
+.ic{width:36px;height:36px;border-radius:10px;background:var(--pale);color:var(--blue);display:flex;align-items:center;justify-content:center;flex:none}
+.ic svg{width:18px;height:18px}
+.qa{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:900px){.qa{grid-template-columns:1fr 1fr}}
+.qa button{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:8px;color:var(--navy);font-weight:600;font-size:13px;transition:border .15s,box-shadow .15s}
+.qa button:hover{border-color:var(--sky);box-shadow:var(--sh)}
+.qa button span{font-weight:400;font-size:11.5px;color:var(--grey)}
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.filters .inp,.filters .sel{width:auto;min-width:150px;padding:8px 10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--grey)}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.empty{padding:34px;text-align:center;color:var(--grey)}
+.tl{position:relative;padding-left:22px}
+.tl .st{position:relative;padding:0 0 16px}
+.tl .st:before{content:"";position:absolute;left:-17px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--line)}
+.tl .st:after{content:"";position:absolute;left:-13px;top:16px;bottom:0;width:2px;background:var(--line)}
+.tl .st:last-child:after{display:none}
+.tl .st.done:before{background:var(--ok)}.tl .st.cur:before{background:var(--warn);animation:pl 1s infinite}
+.tl .st b{color:var(--navy);font-size:13px}
+/* календарь */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal .h{font-size:11px;color:var(--grey);font-weight:600;text-align:center;padding:4px 0}
+.cal .d{min-height:78px;background:#fff;border:1px solid #E6EDF3;border-radius:9px;padding:6px;font-size:11.5px}
+.cal .d.o{background:transparent;border-color:transparent}
+.cal .d.today{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+.cal .d .n{font-weight:600;color:var(--grey);margin-bottom:4px}
+.cal .p{display:block;border-radius:6px;padding:2px 5px;margin-bottom:3px;font-size:10.5px;font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal .p.paid{background:var(--okbg);color:var(--ok)}.cal .p.due{background:var(--pale);color:var(--blue)}.cal .p.over{background:var(--badbg);color:var(--bad)}
+@media (max-width:640px){.cal .d{min-height:52px}.cal .p{font-size:0;height:6px;padding:0}}
+/* модалка / тосты */
+.ov{position:fixed;inset:0;background:rgba(26,44,61,.45);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:6vh 14px;overflow:auto}
+.modal{background:#fff;border-radius:16px;width:100%;max-width:560px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal.wide{max-width:820px}
+.modal .mh{display:flex;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line)}
+.modal .mh h2{margin:0;flex:1}
+.modal .mb{padding:20px 22px}
+.modal .mf{display:flex;gap:10px;justify-content:flex-end;padding:14px 22px;border-top:1px solid var(--line);flex-wrap:wrap}
+.x{border:0;background:transparent;font-size:22px;color:var(--grey);line-height:1}
+.toasts{position:fixed;right:18px;top:74px;z-index:200;display:flex;flex-direction:column;gap:8px;max-width:360px}
+.toast{background:var(--navy);color:#fff;border-radius:11px;padding:12px 16px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.2);animation:tin .2s ease}
+.toast b{display:block;margin-bottom:2px}
+@keyframes tin{from{transform:translateY(10px);opacity:0}}
+/* документ */
+.doc{border:1px solid var(--line);border-radius:10px;padding:22px;font-size:12px;background:#fff}
+.doc h3{text-align:center;font-size:14px}
+.doc table{width:100%;border-collapse:collapse;margin-top:10px}.doc td,.doc th{border:1px solid #CBD8E3;padding:5px 7px;font-size:11.5px}
+.qr{width:160px;height:160px;flex:none}
+/* демо-панель */
+.demo{position:fixed;right:18px;bottom:18px;z-index:150;font-size:12px}
+.demo .fab{background:#fff;border:1px solid var(--line);color:var(--navy);border-radius:22px;padding:8px 14px;font-weight:700;box-shadow:var(--sh);display:flex;gap:8px;align-items:center}
+.demo .pn{position:absolute;bottom:46px;right:0;width:300px;background:#fff;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.2);padding:16px}
+.demo .pn h3{margin-bottom:10px}
+.sw{display:flex;align-items:center;gap:10px;margin:8px 0}
+.tg{width:38px;height:22px;border-radius:11px;background:var(--line);position:relative;border:0;flex:none;transition:background .15s}
+.tg:after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s}
+.tg.on{background:var(--ok)}.tg.on:after{left:19px}
+.tg.off-red{background:var(--bad)}
+@media (max-width:900px){.demo{right:14px;bottom:14px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="ovl"></div>
+<div class="toasts" id="toasts"></div>
+<div class="demo" id="demo"></div>
+<script>
+"use strict";
+/* =====================================================================
+   КОНЦЕПТ ЛИЧНОГО КАБИНЕТА ЛИЗИНГОПОЛУЧАТЕЛЯ «ВОСТОК-ЛИЗИНГ»
+   Все данные вымышленные. Обмен с 1С имитируется в браузере.
+   ===================================================================== */
+const TODAY = new Date(2026, 8, 25);          // «сегодня» в демо
+const KEY = "vl-lk-demo-v1";
+const VAT = 22;                                 // НДС 22% с 2026 г.
+
+/* ---------- утилиты ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const rub = (n, sign) => (sign && n > 0 ? "+" : "") + new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 2, minimumFractionDigits: n % 1 ? 2 : 0 }).format(n) + " ₽";
+const d2 = d => { d = new Date(d); return d.toLocaleDateString("ru-RU"); };
+const dLong = d => new Date(d).toLocaleDateString("ru-RU", { day: "numeric", month: "long", year: "numeric" });
+const tm = t => new Date(t).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+const iso = d => { const x = new Date(d); return x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0") + "-" + String(x.getDate()).padStart(2, "0"); };
+const addM = (d, m) => { const x = new Date(d); const day = x.getDate(); x.setDate(1); x.setMonth(x.getMonth() + m); x.setDate(Math.min(day, new Date(x.getFullYear(), x.getMonth() + 1, 0).getDate())); return x; };
+const MONTHS = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"];
+const MONTHS_G = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+const uid = () => Math.random().toString(36).slice(2, 9);
+const ago = t => { const s = Math.max(0, Math.round((Date.now() - t) / 1000)); if (s < 10) return "только что"; if (s < 60) return s + " сек назад"; const m = Math.round(s / 60); if (m < 60) return m + " мин назад"; return tm(t); };
+const plural = (n, a, b, c) => { n = Math.abs(n) % 100; const n1 = n % 10; if (n > 10 && n < 20) return c; if (n1 > 1 && n1 < 5) return b; if (n1 === 1) return a; return c; };
+
+/* ---------- иконки ---------- */
+const IC = {
+  home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  file: '<path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8 13h8M8 17h6"/>',
+  card: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/>',
+  docs: '<path d="M8 3h9l3 3v13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M4 7v13a1 1 0 0 0 1 1h10"/>',
+  req: '<path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/>',
+  shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  bell: '<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-3.5 3.2-5.5 6.5-5.5s6 2 6.5 5.5"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.6c2.8.2 4.8 2 5.2 5"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c.7-4 4-6.5 8-6.5s7.3 2.5 8 6.5"/>',
+  refresh: '<path d="M20 11a8 8 0 0 0-14.5-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.5 4.5L20 16M20 20v-4h-4"/>',
+  menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  qr: '<rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><path d="M14 14h2v2h-2zM18 18h2v2h-2zM14 18h2v2h-2zM18 14h2v2h-2z"/>',
+  act: '<path d="M4 6h16M4 12h10M4 18h7"/><path d="M16 16l2 2 4-4"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+  cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  car: '<path d="M5 16l1.5-5.5A2 2 0 0 1 8.4 9h7.2a2 2 0 0 1 1.9 1.5L19 16"/><rect x="3" y="15" width="18" height="4" rx="1"/><circle cx="7.5" cy="19.5" r="1.5"/><circle cx="16.5" cy="19.5" r="1.5"/>',
+  down: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  sync: '<path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5M20 12a8 8 0 0 1-14 5.3L4 15M4 20v-5h5"/>',
+  out: '<path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 17l5-5-5-5M15 12H3"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+};
+const ic = (n, s = "") => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ${s}>${IC[n] || ""}</svg>`;
+
+/* ---------- линии BackgroundPaths ---------- */
+function pathsSVG(animated, colorA = "#9CC4E2", colorB = "#FFFFFF", k = 1) {
+  let out = "";
+  for (const [pos, col] of [[1, colorA], [-1, colorB]]) {
+    for (let i = 0; i < 36; i++) {
+      const d = `M-${380 - i * 5 * pos} -${189 + i * 6}C-${380 - i * 5 * pos} -${189 + i * 6} -${312 - i * 5 * pos} ${216 - i * 6} ${152 - i * 5 * pos} ${343 - i * 6}C${616 - i * 5 * pos} ${470 - i * 6} ${684 - i * 5 * pos} ${875 - i * 6} ${684 - i * 5 * pos} ${875 - i * 6}`;
+      const w = (0.5 + i * 0.03).toFixed(2);
+      const op = (Math.min(0.1 + i * 0.03, 1) * k).toFixed(3);
+      const dur = (20 + ((i * 37 + (pos > 0 ? 11 : 3)) % 100) / 10).toFixed(1);
+      const delay = (-((i * 53) % 200) / 10).toFixed(1);
+      out += animated
+        ? `<path d="${d}" pathLength="1" stroke="${col}" stroke-width="${w}" stroke-opacity="${op}" style="animation-duration:${dur}s;animation-delay:${delay}s"/>`
+        : `<path d="${d}" fill="none" stroke="${col}" stroke-width="${w}" stroke-opacity="${op}"/>`;
+    }
+  }
+  return `<svg class="paths" viewBox="0 0 696 316" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${out}</svg>`;
+}
+const LOGO = `<svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true"><defs><clipPath id="cl"><circle cx="20" cy="20" r="17"/></clipPath><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9CC4E2"/><stop offset="1" stop-color="#2F6F9F"/></linearGradient></defs><g clip-path="url(#cl)" fill="url(#lg)">${[4, 9, 14.5, 20.5, 27].map((y, i) => `<path d="M0 ${y}Q20 ${y + 6} 40 ${y - 2}V${y + 1.6 + i * 0.9}Q20 ${y + 7.6 + i * 0.9} 0 ${y + 1.6 + i * 0.9}z"/>`).join("")}</g></svg>`;
+
+/* =====================================================================
+   ДЕМО-ДАННЫЕ
+   ===================================================================== */
+function buildSchedule(c) {
+  const pays = [], accr = [];
+  const body = c.sum - c.advance - c.buyout;
+  const m = Math.round(body / c.term / 10) * 10;
+  pays.push({ n: 0, date: iso(c.sign), amount: c.advance, kind: "Аванс" });
+  const tr = new Date(c.transfer);
+  for (let i = 1; i <= c.term; i++) {
+    const dt = addM(new Date(tr.getFullYear(), tr.getMonth(), c.payDay), i);
+    let a = i === c.term ? body - m * (c.term - 1) + c.buyout : m;
+    pays.push({ n: i, date: iso(dt), amount: a, kind: i === c.term ? "Платёж + выкупной" : "Лизинговый платёж" });
+  }
+  const acc = Math.round(c.sum / c.term * 100) / 100;
+  for (let i = 0; i < c.term; i++) {
+    const dt = addM(new Date(tr.getFullYear(), tr.getMonth(), 1), i);
+    const end = new Date(dt.getFullYear(), dt.getMonth() + 1, 0);
+    accr.push({ period: iso(dt), end: iso(end), amount: acc, vat: Math.round(acc * VAT / (100 + VAT) * 100) / 100 });
+  }
+  return { pays, accr, monthly: m };
+}
+
+function initialState() {
+  const contracts = [
+    { id: "ДЛ-117/24", kind: "Легковой автомобиль", sign: "2024-03-12", transfer: "2024-03-20", end: "2027-03-20", sum: 4850000, advance: 970000, buyout: 1000, term: 36, payDay: 20,
+      subjects: [{ name: "Toyota Camry 2.5 AT", type: "Легковой автомобиль", props: { "VIN": "XW7BF3HK00S012345", "Госномер": "А 117 ВЛ 116", "Год выпуска": "2024", "Цвет": "Белый", "Пробег при передаче": "15 км", "Место эксплуатации": "Казань" } }] },
+    { id: "ДЛ-233/24", kind: "Коммерческий транспорт", sign: "2024-07-02", transfer: "2024-07-15", end: "2027-07-15", sum: 3120000, advance: 468000, buyout: 1000, term: 36, payDay: 15,
+      subjects: [{ name: "ГАЗель NEXT ЦМФ", type: "Коммерческий транспорт", props: { "VIN": "X96A21R32R0123456", "Госномер": "В 233 ТК 116", "Год выпуска": "2024", "Кузов": "Цельнометаллический фургон", "Место эксплуатации": "Альметьевск" } }] },
+    { id: "ДЛ-045/25", kind: "Спецтехника", sign: "2025-02-10", transfer: "2025-03-01", end: "2028-03-01", sum: 9700000, advance: 1940000, buyout: 1000, term: 36, payDay: 1,
+      subjects: [{ name: "Экскаватор-погрузчик 3CX", type: "Спецтехника", props: { "Заводской номер": "SN-3CX-2025-004517", "Госномер": "16 ТЕ 4517", "Год выпуска": "2025", "ПСМ": "RU СВ 123456 (электронный)", "Место эксплуатации": "Нижнекамск" } }] },
+    { id: "ДЛ-198/25", kind: "Оборудование", sign: "2025-09-05", transfer: "2025-10-01", end: "2027-10-01", sum: 6400000, advance: 1280000, buyout: 1000, term: 24, payDay: 5,
+      subjects: [{ name: "Станок лазерной резки 3015", type: "Оборудование", props: { "Заводской номер": "LZ-3015-88120", "Год выпуска": "2025", "Мощность": "3 кВт", "Место установки": "Казань, ул. Производственная, 5 (демо)" } },
+        { name: "Винтовой компрессор 30 кВт", type: "Оборудование", props: { "Заводской номер": "CMP-30-55107", "Год выпуска": "2025", "Производительность": "4,5 м³/мин", "Место установки": "Казань, ул. Производственная, 5 (демо)" } }] },
+  ];
+  // платежи: всё до «сегодня» оплачено, кроме частичной оплаты по ДЛ-233/24; переплата 2 000 по ДЛ-117/24
+  const payments = [];
+  contracts.forEach(c => {
+    const s = buildSchedule(c);
+    s.pays.forEach(p => {
+      if (new Date(p.date) <= TODAY) {
+        let paid = p.amount;
+        if (c.id === "ДЛ-233/24" && p.date === "2026-09-15") paid = p.amount - 12400;
+        if (c.id === "ДЛ-117/24" && p.date === "2026-09-20") paid = p.amount + 2000;
+        payments.push({ id: uid(), cid: c.id, date: p.date, amount: paid, doc: "п/п " + (1000 + payments.length) });
+      }
+    });
+  });
+  // счета-фактуры (УПД) за начисленные месяцы до августа 2026
+  const invoices = []; let no = 4100;
+  contracts.forEach(c => {
+    buildSchedule(c).accr.forEach(a => {
+      if (new Date(a.end) < new Date(2026, 8, 1)) invoices.push({ id: uid(), cid: c.id, no: "УПД-" + (no++), date: a.end, period: a.period, amount: a.amount, vat: a.vat });
+    });
+  });
+  const scans = [];
+  contracts.forEach(c => {
+    scans.push({ id: uid(), cid: c.id, title: "Договор лизинга " + c.id, date: c.sign, kind: "scan" });
+    scans.push({ id: uid(), cid: c.id, title: "График платежей к договору " + c.id, date: c.sign, kind: "scan" });
+    scans.push({ id: uid(), cid: c.id, title: "Акт приёма-передачи предмета лизинга", date: c.transfer, kind: "scan" });
+  });
+  const acts = [{ id: uid(), cid: "all", title: "Акт сверки за II квартал 2026", from: "2026-04-01", to: "2026-06-30", date: "2026-07-06" }];
+  const policies = [
+    { id: uid(), cid: "ДЛ-117/24", subj: 0, type: "КАСКО", insurer: "СК «Меридиан» (демо)", no: "КС-0042-117", from: "2025-10-13", to: "2026-10-12" },
+    { id: uid(), cid: "ДЛ-117/24", subj: 0, type: "ОСАГО", insurer: "СК «Меридиан» (демо)", no: "ХХХ 0117234560", from: "2026-03-20", to: "2027-03-19" },
+    { id: uid(), cid: "ДЛ-233/24", subj: 0, type: "КАСКО", insurer: "СК «Гарант-Полис» (демо)", no: "ГП-233-2026", from: "2026-07-15", to: "2027-07-14" },
+    { id: uid(), cid: "ДЛ-233/24", subj: 0, type: "ОСАГО", insurer: "СК «Гарант-Полис» (демо)", no: "ХХХ 0233456781", from: "2026-07-15", to: "2027-07-14" },
+    { id: uid(), cid: "ДЛ-045/25", subj: 0, type: "Страхование спецтехники", insurer: "СК «Меридиан» (демо)", no: "СТ-045-25", from: "2026-03-01", to: "2027-02-28" },
+    { id: uid(), cid: "ДЛ-198/25", subj: 0, type: "Страхование имущества", insurer: "СК «Гарант-Полис» (демо)", no: "ИМ-198-1", from: "2025-10-01", to: "2026-09-30" },
+    { id: uid(), cid: "ДЛ-198/25", subj: 1, type: "Страхование имущества", insurer: "СК «Гарант-Полис» (демо)", no: "ИМ-198-2", from: "2025-10-01", to: "2026-09-30" },
+    { id: uid(), cid: "ДЛ-117/24", subj: 0, type: "КАСКО", insurer: "СК «Меридиан» (демо)", no: "КС-0031-117", from: "2024-03-20", to: "2025-10-12" },
+  ];
+  const now = Date.now();
+  return {
+    v: 1, session: null,
+    company: { name: "ООО «СеверТрансЛогистик»", inn: "1650000000", kpp: "165001001", ogrn: "1161650000000", addr: "423800, Республика Татарстан, г. Набережные Челны, пр-т Демо, д. 1", edo: { on: true, op: "Оператор ЭДО (демо)", id: "2BM-1650000000-0000000000" } },
+    users: [
+      { id: "u1", fio: "Иванов Андрей Петрович", short: "Андрей Петрович", email: "director@severtrans.demo", phone: "+7 900 000-00-01", role: "Руководитель", owner: true, status: "active",
+        rights: { contracts: 1, payments: 1, docs: 1, requests: 1, insurance: 1, staff: 1 }, scope: "all" },
+      { id: "u2", fio: "Петрова Елена Сергеевна", short: "Елена Сергеевна", email: "buh@severtrans.demo", phone: "+7 900 000-00-02", role: "Бухгалтер", owner: false, status: "active",
+        rights: { contracts: 1, payments: 1, docs: 1, requests: 1, insurance: 0, staff: 0 }, scope: ["ДЛ-117/24", "ДЛ-233/24"] },
+    ],
+    contracts, payments, invoices, scans, acts, policies,
+    bills: [], requests: [
+      { id: "R-1024", type: "spravka", title: "Справка о задолженности", cid: "all", created: now - 86400000 * 9, status: "done", stages: [["Запрос принят", now - 86400000 * 9], ["Отправлен в 1С", now - 86400000 * 9 + 60000], ["Справка готова", now - 86400000 * 9 + 180000]], result: { title: "Справка о задолженности на " + d2(addM(TODAY, 0).getTime() - 86400000 * 9) } },
+      { id: "R-1027", type: "originals", title: "Оригиналы УПД за июль 2026", cid: "ДЛ-045/25", created: now - 86400000 * 4, status: "done", channel: "edo", stages: [["Запрос принят", now - 86400000 * 4], ["Передан в 1С", now - 86400000 * 4 + 60000], ["Отправлено через ЭДО", now - 86400000 * 3]], result: { text: "Документы отправлены через оператора ЭДО. Подпишите их в своей системе ЭДО." } },
+    ],
+    notes: [
+      { id: uid(), t: now - 3600000 * 5, type: "doc", text: "Новые УПД за август 2026 по 4 договорам", link: "#/documents", read: false },
+      { id: uid(), t: now - 3600000 * 30, type: "ins", text: "Полис КАСКО по ДЛ-117/24 заканчивается 12.10.2026", link: "#/insurance", read: false },
+      { id: uid(), t: now - 86400000 * 3, type: "req", text: "Оригиналы УПД за июль отправлены через ЭДО", link: "#/requests/R-1027", read: true },
+    ],
+    notifSettings: { pay: true, doc: true, req: true, ins: true, email: true },
+    sync: { online: true, last: now - 120000, busy: false, pending: [] },
+    jobs: [], reqNo: 1030, billNo: 311,
+    reg: null,
+  };
+}
+
+let S;
+function load() { try { const raw = localStorage.getItem(KEY); if (raw) { const s = JSON.parse(raw); if (s && s.v === 1) return s; } } catch (e) { } return null; }
+let saveT; function save() { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { } }, 150); }
+S = load() || initialState();
+
+/* =====================================================================
+   ВЫЧИСЛЕНИЯ
+   ===================================================================== */
+const me = () => S.users.find(u => u.id === S.session?.uid);
+const can = r => !!me()?.rights[r];
+const myContracts = () => { const u = me(); return S.contracts.filter(c => u?.scope === "all" || u?.scope.includes(c.id)); };
+const inScope = cid => cid === "all" ? true : myContracts().some(c => c.id === cid);
+const contract = id => S.contracts.find(c => c.id === id);
+const sched = {}; const schedOf = c => sched[c.id] || (sched[c.id] = buildSchedule(c));
+function paidTotal(cid, upto = TODAY) { return S.payments.filter(p => p.cid === cid && new Date(p.date) <= upto).reduce((a, p) => a + p.amount, 0) + S.payments.filter(p => p.cid === cid && new Date(p.date) > upto).reduce((a, p) => a + p.amount, 0); }
+function dueTotal(cid) { return schedOf(contract(cid)).pays.filter(p => new Date(p.date) <= TODAY).reduce((a, p) => a + p.amount, 0); }
+function saldo(cid) { return Math.round((paidTotal(cid) - dueTotal(cid)) * 100) / 100; }  // >0 переплата, <0 долг
+function payStatus(c) { // статусы строк графика с учётом оплат (распределение по порядку)
+  let pool = paidTotal(c.id);
+  return schedOf(c).pays.map(p => {
+    const covered = Math.min(pool, p.amount); pool = Math.max(0, pool - p.amount);
+    const past = new Date(p.date) <= TODAY;
+    let st = covered >= p.amount - 0.01 ? "paid" : past ? "over" : "due";
+    return { ...p, covered, st };
+  });
+}
+function nextPay(c) { return payStatus(c).find(p => p.st !== "paid"); }
+function remaining(c) { return schedOf(c).pays.reduce((a, p) => a + p.amount, 0) - paidTotal(c.id); }
+function polStatus(p) { const to = new Date(p.to), days = Math.round((to - TODAY) / 86400000); if (p.pending) return ["На проверке", "info", days]; if (days < 0) return ["Закончился", "grey", days]; if (days <= 30) return ["Заканчивается", "warn", days]; return ["Действует", "ok", days]; }
+const actualPolicies = () => S.policies.filter(p => inScope(p.cid) && !S.policies.some(q => q !== p && q.cid === p.cid && q.subj === p.subj && q.type === p.type && new Date(q.from) > new Date(p.from)));
+const myNotes = () => S.notes.filter(n => (n.type !== "ins" || can("insurance")) && (n.type !== "pay" || can("payments")) && (n.type !== "doc" || can("docs")));
+const unread = () => myNotes().filter(n => !n.read).length;
+const activeReqs = () => S.requests.filter(r => r.status !== "done" && r.status !== "rejected" && inScope(r.cid)).length;
+
+/* =====================================================================
+   ПСЕВДОСИНХРОНИЗАЦИЯ С 1С
+   Задание = цепочка этапов. Этапы с needs1C ждут, пока 1С доступна.
+   ===================================================================== */
+const FLOWS = {
+  act: [["Запрос принят", 1, false], ["В очереди на обмен с 1С", 2, true], ["1С формирует акт сверки", 4, true], ["Акт сверки готов", 0, false]],
+  spravka: [["Запрос принят", 1, false], ["Отправлен в 1С", 2, true], ["1С формирует справку", 3, true], ["Справка готова", 0, false]],
+  letter: [["Запрос принят", 1, false], ["Отправлен в 1С", 2, true], ["Письмо с графиком сформировано", 0, false]],
+  originals: [["Запрос принят", 1, false], ["Передан в 1С", 2, true], ["Документы подготовлены", 4, true], ["Отправлено", 0, false]],
+  other: [["Запрос принят", 1, false], ["Передан персональному менеджеру", 3, false], ["Менеджер готовит ответ", 6, false], ["Ответ получен", 0, false]],
+  payment: [["Платёж отправлен банком", 2, false], ["Ожидаем поступление в 1С", 4, true], ["Платёж проведён в 1С", 0, false]],
+  policy: [["Скан полиса загружен", 1, false], ["Передан в 1С на проверку", 3, true], ["Полис принят", 0, false]],
+};
+function startJob(type, payload) {
+  const j = { id: uid(), type, payload, stage: 0, at: Date.now() + FLOWS[type][0][1] * 1000 };
+  S.jobs.push(j); save(); return j;
+}
+function tick() {
+  let changed = false;
+  for (const j of [...S.jobs]) {
+    const flow = FLOWS[j.type];
+    const cur = flow[j.stage];
+    if (Date.now() < j.at) continue;
+    const next = flow[j.stage + 1];
+    if (!next) continue;
+    if (next[2] && !S.sync.online) { if (!j.waiting) { j.waiting = true; changed = true; onStage(j, "Ожидает связи с 1С", true); } continue; }
+    j.waiting = false; j.stage++; j.at = Date.now() + next[1] * 1000; changed = true;
+    onStage(j, next[0]);
+    if (j.stage === flow.length - 1) { finishJob(j); S.jobs = S.jobs.filter(x => x !== j); }
+  }
+  // плановая синхронизация раз в 45 секунд
+  if (S.sync.online && !S.sync.busy && Date.now() - S.sync.last > 45000) { doSync(true); }
+  if (changed) { save(); render(true); } else refreshLive();
+}
+function onStage(j, label, isWait) {
+  const r = S.requests.find(r => r.id === j.payload.rid);
+  if (r) {
+    if (isWait) { r.waiting = true; }
+    else { r.waiting = false; r.stages.push([label, Date.now()]); r.status = "work"; }
+  }
+  if (j.type === "payment") { const b = S.bills.find(b => b.id === j.payload.bid); if (b) { b.status = isWait ? "Ожидает связи с 1С" : label; } }
+}
+function finishJob(j) {
+  const p = j.payload; const r = S.requests.find(r => r.id === p.rid);
+  const done = (text, link) => { if (r) { r.status = "done"; r.result = r.result || {}; } notify(j.type === "payment" ? "pay" : "req", text, link); toast("Готово", text); };
+  if (j.type === "act") {
+    const a = { id: uid(), cid: p.cid, title: "Акт сверки " + (p.cid === "all" ? "по всем договорам" : "по " + p.cid) + " с " + d2(p.from) + " по " + d2(p.to), from: p.from, to: p.to, date: iso(TODAY), fresh: true };
+    S.acts.unshift(a); r.result = { title: a.title, actId: a.id }; done("Акт сверки готов — он в разделе «Документы»", "#/documents/acts");
+  } else if (j.type === "spravka") { r.result = { title: r.title + " на " + d2(TODAY) }; done(r.title + " готова", "#/requests/" + r.id); }
+  else if (j.type === "letter") { r.result = { title: "Письмо с графиком платежей по " + (p.cid === "all" ? "всем договорам" : p.cid) }; done("Письмо с графиком платежей сформировано", "#/requests/" + r.id); }
+  else if (j.type === "originals") {
+    r.result = { text: p.channel === "edo" ? "Документы отправлены через " + S.company.edo.op + ". Подпишите их в своей системе ЭДО." : "Оригиналы отправлены Почтой России. Трек-номер: 80080" + String(Math.floor(Math.random() * 1e9)).padStart(9, "0") + " (демо)." };
+    done("Оригиналы документов отправлены", "#/requests/" + r.id);
+  } else if (j.type === "other") { r.result = { text: "Здравствуйте! Спасибо за обращение. Подготовили расчёт по вашему вопросу и приложили файл. Если останутся вопросы — позвоните мне. Екатерина Смирнова, персональный менеджер.", file: "Ответ менеджера.pdf" }; done("Персональный менеджер ответил на запрос " + r.id, "#/requests/" + r.id); }
+  else if (j.type === "payment") {
+    const b = S.bills.find(b => b.id === p.bid);
+    S.payments.push({ id: uid(), cid: b.cid, date: iso(TODAY), amount: b.amount, doc: "п/п по счёту " + b.no });
+    b.status = "Оплачен"; b.paid = true;
+    done("Платёж " + rub(b.amount) + " по " + b.cid + " проведён в 1С. Сальдо обновлено.", "#/payments/saldo");
+  } else if (j.type === "policy") {
+    const pol = S.policies.find(x => x.id === p.pid); pol.pending = false;
+    done("Новый полис " + pol.type + " по " + pol.cid + " принят", "#/insurance");
+  }
+}
+function doSync(auto) {
+  if (!S.sync.online) { toast("1С недоступна", "Показываем данные последней синхронизации. Запросы отправим автоматически, когда связь восстановится."); return; }
+  S.sync.busy = true; render(true);
+  setTimeout(() => { S.sync.busy = false; S.sync.last = Date.now(); save(); render(true); if (!auto) toast("Данные обновлены", "Кабинет получил изменения из 1С"); }, 1300);
+}
+function notify(type, text, link) { S.notes.unshift({ id: uid(), t: Date.now(), type, text, link, read: false }); }
+function toast(title, text) {
+  const el = document.createElement("div"); el.className = "toast"; el.innerHTML = `<b>${esc(title)}</b>${esc(text || "")}`;
+  $("#toasts").appendChild(el); setTimeout(() => el.remove(), 4600);
+}
+function newRequest(type, title, cid, extra = {}) {
+  const r = { id: "R-" + (++S.reqNo), type, title, cid, created: Date.now(), status: "work", stages: [[FLOWS[type][0][0], Date.now()]], ...extra };
+  S.requests.unshift(r); startJob(type, { rid: r.id, cid, ...extra.payload });
+  save(); return r;
+}
+
+/* =====================================================================
+   РОУТИНГ И КАРКАС
+   ===================================================================== */
+const NAV = [
+  ["home", "Главная", "home", null], ["contracts", "Договоры", "file", "contracts"], ["payments", "Платежи", "card", "payments"],
+  ["documents", "Документы", "docs", "docs"], ["requests", "Запросы", "req", "requests"], ["insurance", "Страхование", "shield", "insurance"],
+  ["notifications", "Уведомления", "bell", null], ["company", "Компания и сотрудники", "users", "staff"], ["profile", "Профиль", "user", null],
+];
+const parts = () => (location.hash.replace(/^#\/?/, "") || "home").split("/").map(decodeURIComponent);
+let lastHash = "";
+function render(soft) {
+  const p = parts();
+  if (!S.session) { if (!soft || lastHash !== location.hash || !$(".auth")) renderAuth(p); lastHash = location.hash; renderDemo(); return; }
+  if (p[0] === "login" || p[0] === "register") { location.hash = "#/home"; return; }
+  const nav = NAV.find(n => n[0] === p[0]);
+  if (nav && nav[3] && !can(nav[3])) { $("#app").innerHTML = shell(`<div class="card empty">${ic("lock", 'width="28" height="28"')}<h2 style="margin-top:10px">Нет доступа</h2>У вашей учётной записи нет прав на этот раздел. Доступ настраивает руководитель компании.</div>`, "Нет доступа"); bindShell(); return; }
+  const scrollY = window.scrollY;
+  const view = VIEWS[p[0]] || VIEWS.home;
+  const { title, html } = view(p);
+  const focusId = soft ? document.activeElement?.id : null;
+  const focusVal = focusId ? document.activeElement.value : null;
+  $("#app").innerHTML = shell(html, title);
+  bindShell();
+  if (soft) { window.scrollTo(0, scrollY); if (focusId && $("#" + focusId)) { const el = $("#" + focusId); el.value = focusVal; el.focus(); } }
+  else window.scrollTo(0, 0);
+  lastHash = location.hash; renderDemo();
+}
+function syncPill() {
+  const s = S.sync;
+  if (!s.online) return `<div class="sync" title="Кабинет работает на сохранённых данных"><span class="dot off"></span><span class="lbl">1С недоступна · данные на ${tm(s.last)}</span></div>`;
+  if (s.busy) return `<div class="sync"><span class="dot busy"></span><span class="lbl">Получаем изменения из 1С…</span></div>`;
+  return `<div class="sync" title="Данные кабинета синхронизируются с 1С Восток-лизинга"><span class="dot"></span><span class="lbl">1С: обновлено <span data-ago="${s.last}">${ago(s.last)}</span></span></div>`;
+}
+function shell(html, title) {
+  const u = me(); const p = parts()[0];
+  const nav = NAV.filter(n => !n[3] || can(n[3])).map(n => {
+    const c = n[0] === "requests" ? activeReqs() : n[0] === "notifications" ? unread() : 0;
+    return `<a href="#/${n[0]}" class="${p === n[0] ? "on" : ""}">${ic(n[2])}${n[1]}${c ? `<span class="cnt">${c}</span>` : ""}</a>`;
+  }).join("");
+  return `<div class="app">
+  <aside class="side" id="side">${pathsSVG(false, "#9CC4E2", "#FFFFFF", .35)}<div class="in">
+    <div class="brand">${LOGO}<div><div class="t">ВОСТОК-ЛИЗИНГ</div><div class="s">Личный кабинет</div></div></div>
+    <nav class="nav">${nav}</nav>
+    <div class="mgr"><span style="opacity:.75">Персональный менеджер</span><b>Екатерина Смирнова</b>+7 (843) 000-00-00<br>manager@v-leasing.demo</div>
+  </div></aside>
+  <div class="main">
+    <div class="top"><button class="ib burger" id="burger" aria-label="Меню">${ic("menu")}</button>
+      <div class="ttl">${esc(title)}</div>
+      ${syncPill()}
+      <button class="ib" id="btnSync" title="Обновить данные из 1С" aria-label="Обновить данные">${S.sync.busy ? '<span class="spin dark"></span>' : ic("refresh")}</button>
+      <a class="ib" href="#/notifications" aria-label="Уведомления">${ic("bell")}${unread() ? `<span class="badge">${unread()}</span>` : ""}</a>
+      <div class="user" onclick="location.hash='#/profile'"><div class="ava">${u.fio.split(" ").slice(0, 2).map(x => x[0]).join("")}</div><div class="txt"><div class="nm">${esc(u.fio.split(" ").slice(0, 2).join(" "))}</div><div class="rl">${esc(u.role)} · ${esc(S.company.name)}</div></div></div>
+    </div>
+    <div class="content">${html}</div>
+  </div></div>`;
+}
+function bindShell() {
+  $("#burger")?.addEventListener("click", e => { e.stopPropagation(); $("#side").classList.toggle("open"); });
+  $("#side")?.addEventListener("click", e => { if (e.target.closest("a")) $("#side").classList.remove("open"); });
+  document.addEventListener("click", closeSide, { once: true });
+  $("#btnSync")?.addEventListener("click", () => doSync(false));
+}
+function closeSide(e) { const s = $("#side"); if (s && !s.contains(e.target)) s.classList.remove("open"); }
+function refreshLive() { document.querySelectorAll("[data-ago]").forEach(el => el.textContent = ago(+el.dataset.ago)); }
+
+/* =====================================================================
+   ВХОД И РЕГИСТРАЦИЯ
+   ===================================================================== */
+function renderAuth(p) {
+  const mode = p[0] === "register" ? "register" : "login";
+  let body;
+  if (mode === "login") {
+    body = `<form id="fLogin">
+      <div class="field"><label for="lg1">E-mail</label><input class="inp" id="lg1" type="email" value="director@severtrans.demo" autocomplete="username"></div>
+      <div class="field"><label for="lg2">Пароль</label><input class="inp" id="lg2" type="password" value="demo-demo" autocomplete="current-password"></div>
+      <div id="lgErr"></div>
+      <button class="btn block" id="lgBtn" type="submit">Войти</button>
+      <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:12.5px"><a id="forgot">Забыли пароль?</a><a href="#/register">Регистрация компании</a></div>
+      <div class="hint">Демо: войдите как руководитель — или как бухгалтер <a id="asBuh">buh@severtrans.demo</a>, у которого ограничены права и договоры.</div>
+    </form>`;
+  } else {
+    const r = S.reg || (S.reg = { step: 1, inn: "1650000000", dog: "ДЛ-117/24", fio: "Иванов Андрей Петрович", email: "director@severtrans.demo", phone: "+7 900 000-00-01" });
+    const st = r.step;
+    const bar = `<div class="steps">${[1, 2, 3].map(i => `<i class="${i <= st ? "on" : ""}"></i>`).join("")}</div>`;
+    if (st === 1) body = `${bar}<form id="fReg1"><p class="small muted" style="margin:0 0 12px">Кабинет создаётся на компанию и её руководителя. Сотрудников руководитель добавит сам внутри кабинета.</p>
+      <div class="row"><div class="field"><label for="r1">ИНН компании</label><input class="inp" id="r1" value="${esc(r.inn)}" inputmode="numeric" required></div>
+      <div class="field"><label for="r2">Номер действующего договора</label><input class="inp" id="r2" value="${esc(r.dog)}" required></div></div>
+      <div class="field"><label for="r3">ФИО руководителя</label><input class="inp" id="r3" value="${esc(r.fio)}" required></div>
+      <div class="row"><div class="field"><label for="r4">E-mail</label><input class="inp" id="r4" type="email" value="${esc(r.email)}" required></div>
+      <div class="field"><label for="r5">Телефон</label><input class="inp" id="r5" value="${esc(r.phone)}" required></div></div>
+      <label class="chk"><input type="checkbox" id="r6" checked> Согласен с <a>политикой обработки персональных данных</a> и <a>правилами пользования кабинетом</a></label>
+      <div id="rErr"></div>
+      <button class="btn block" id="rBtn" type="submit">Продолжить</button>
+      <div class="hint">Демо: данные уже заполнены. Попробуйте изменить ИНН — увидите, что будет, если компания не найдена в 1С.</div>
+      <div style="text-align:center;margin-top:10px;font-size:12.5px"><a href="#/login">У меня уже есть кабинет</a></div></form>`;
+    if (st === 2) body = `${bar}<form id="fReg2"><div class="alert ok" style="margin-bottom:14px">✓ Компания ${esc(S.company.name)} и договор ${esc(r.dog)} найдены в базе Восток-лизинга</div>
+      <p class="small" style="margin:0 0 12px">Отправили код подтверждения на ${esc(r.phone)}.</p>
+      <div class="field"><label for="c1">Код из SMS</label><input class="inp" id="c1" inputmode="numeric" maxlength="4" placeholder="••••" style="letter-spacing:.5em;font-size:18px;text-align:center"></div>
+      <div id="cErr"></div><button class="btn block" type="submit">Подтвердить</button>
+      <div class="hint">Демо: код — 1234</div></form>`;
+    if (st === 3) body = `${bar}<form id="fReg3"><p class="small" style="margin:0 0 12px">Придумайте пароль для входа.</p>
+      <div class="field"><label for="p1">Пароль</label><input class="inp" id="p1" type="password" value="demo-demo"></div>
+      <div class="field"><label for="p2">Повторите пароль</label><input class="inp" id="p2" type="password" value="demo-demo"></div>
+      <button class="btn block" type="submit">Создать кабинет компании</button></form>`;
+  }
+  $("#app").innerHTML = `<div class="auth">${pathsSVG(true)}
+    <div class="auth-hero"><h2>Договоры, платежи и документы в одном окне</h2><p>Счёт с QR-кодом, акт сверки и справки без звонков и писем. Данные из учётной системы Восток-лизинга.</p></div>
+    <div class="auth-card"><div class="brand">${LOGO}<div><div class="t">ВОСТОК-ЛИЗИНГ</div><div class="s">Личный кабинет лизингополучателя</div></div></div>
+      <div class="auth-tabs"><button class="${mode === "login" ? "on" : ""}" onclick="location.hash='#/login'">Вход</button><button class="${mode === "register" ? "on" : ""}" onclick="location.hash='#/register'">Регистрация компании</button></div>
+      ${body}
+    </div></div>`;
+  // обработчики
+  $("#fLogin")?.addEventListener("submit", e => {
+    e.preventDefault(); const em = $("#lg1").value.trim().toLowerCase();
+    const u = S.users.find(u => u.email === em && u.status === "active");
+    if (!u) { $("#lgErr").innerHTML = `<div class="err">Не нашли активного пользователя с таким e-mail. Сотрудников в кабинет добавляет руководитель компании.</div>`; return; }
+    $("#lgBtn").innerHTML = '<span class="spin"></span> Входим…';
+    setTimeout(() => { S.session = { uid: u.id }; save(); location.hash = "#/home"; render(); toast("Добро пожаловать", u.short); }, 700);
+  });
+  $("#asBuh")?.addEventListener("click", () => { $("#lg1").value = "buh@severtrans.demo"; });
+  $("#forgot")?.addEventListener("click", () => toast("Восстановление пароля", "Ссылка для сброса пароля отправлена на e-mail (демо)"));
+  $("#fReg1")?.addEventListener("submit", e => {
+    e.preventDefault(); const r = S.reg;
+    r.inn = $("#r1").value.trim(); r.dog = $("#r2").value.trim(); r.fio = $("#r3").value.trim(); r.email = $("#r4").value.trim(); r.phone = $("#r5").value.trim();
+    if (!$("#r6").checked) { $("#rErr").innerHTML = `<div class="err">Нужно согласие на обработку персональных данных.</div>`; return; }
+    $("#rBtn").innerHTML = '<span class="spin"></span> Сверяем с базой Восток-лизинга…'; $("#rBtn").disabled = true;
+    setTimeout(() => {
+      if (r.inn !== S.company.inn || !S.contracts.some(c => c.id.toLowerCase() === r.dog.toLowerCase())) {
+        $("#rBtn").innerHTML = "Продолжить"; $("#rBtn").disabled = false;
+        $("#rErr").innerHTML = `<div class="err">Не нашли компанию с ИНН ${esc(r.inn)} и договором ${esc(r.dog)}. Мы передали заявку на регистрацию персональному менеджеру — он свяжется с вами в течение рабочего дня.</div>`; return;
+      }
+      r.step = 2; save(); renderAuth(["register"]);
+    }, 1400);
+  });
+  $("#fReg2")?.addEventListener("submit", e => { e.preventDefault(); if ($("#c1").value !== "1234") { $("#cErr").innerHTML = `<div class="err">Неверный код. Демо-код — 1234.</div>`; return; } S.reg.step = 3; save(); renderAuth(["register"]); });
+  $("#fReg3")?.addEventListener("submit", e => { e.preventDefault(); if ($("#p1").value !== $("#p2").value) { toast("Пароли не совпадают"); return; } S.reg = null; S.session = { uid: "u1" }; save(); location.hash = "#/home"; render(); toast("Кабинет компании создан", "Вы — владелец кабинета. Добавьте сотрудников в разделе «Компания и сотрудники»."); });
+}
+
+/* =====================================================================
+   ЭКРАНЫ
+   ===================================================================== */
+const statusTag = st => st === "paid" ? '<span class="tag ok">Оплачен</span>' : st === "over" ? '<span class="tag bad">Просрочен</span>' : '<span class="tag info">Ожидается</span>';
+const saldoTxt = s => s < -0.01 ? `<span style="color:var(--bad);font-weight:700">Долг ${rub(-s)}</span>` : s > 0.01 ? `<span style="color:var(--ok);font-weight:700">Переплата ${rub(s)}</span>` : `<span class="muted">0 ₽</span>`;
+const reqTag = r => r.waiting ? '<span class="tag warn">Ждёт связи с 1С</span>' : r.status === "done" ? '<span class="tag ok">Готово</span>' : '<span class="tag info"><span class="spin dark" style="width:10px;height:10px;border-width:2px"></span> В работе</span>';
+const cOpts = (all = true, sel = "") => (all ? `<option value="all">Все договоры</option>` : "") + myContracts().map(c => `<option value="${c.id}" ${sel === c.id ? "selected" : ""}>${c.id} · ${esc(c.subjects[0].name)}${c.subjects.length > 1 ? " и др." : ""}</option>`).join("");
+
+const VIEWS = {};
+
+/* ---------- ГЛАВНАЯ ---------- */
+VIEWS.home = () => {
+  const u = me(); const cs = myContracts();
+  const upcoming = cs.flatMap(c => payStatus(c).filter(p => p.st !== "paid").slice(0, 3).map(p => ({ ...p, cid: c.id }))).sort((a, b) => new Date(a.date) - new Date(b.date));
+  const np = upcoming.find(p => p.st === "due") || upcoming[0];
+  const totalSaldo = cs.reduce((a, c) => a + saldo(c.id), 0);
+  const debts = cs.filter(c => saldo(c.id) < -0.01);
+  const expiring = can("insurance") ? actualPolicies().filter(p => polStatus(p)[1] === "warn") : [];
+  const lastDocs = can("docs") ? S.invoices.filter(i => inScope(i.cid)).sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 4) : [];
+  const h = new Date().getHours(); const greet = h < 12 ? "Доброе утро" : h < 18 ? "Добрый день" : "Добрый вечер";
+  let html = `<div class="hd"><div><h1>${greet}, ${esc(u.short)}</h1><div class="muted">${esc(S.company.name)} · ИНН ${S.company.inn}</div></div></div>`;
+  if (!S.sync.online) html += `<div class="alert bad">${ic("sync", 'width="20" height="20"')}<div class="sp"><b>Связь с 1С временно недоступна.</b> Показываем данные на ${tm(S.sync.last)}. Ваши запросы сохранятся и отправятся автоматически.</div></div>`;
+  debts.forEach(c => html += `<div class="alert bad"><div class="sp">По договору <b>${c.id}</b> задолженность <b>${rub(-saldo(c.id))}</b>. Оплатите, чтобы избежать пеней.</div>${can("payments") ? `<a class="btn sm" href="#/payments/bill/${encodeURIComponent(c.id)}/debt">Счёт на оплату</a>` : ""}</div>`);
+  if (expiring.length === 1) { const p = expiring[0]; html += `<div class="alert warn"><div class="sp">Полис «${p.type}» по ${p.cid} (${esc(contract(p.cid).subjects[p.subj].name)}) заканчивается <b>${d2(p.to)}</b>. Загрузите новый полис.</div><a class="btn sm sec" href="#/insurance">К полисам</a></div>`; }
+  else if (expiring.length > 1) html += `<div class="alert warn"><div class="sp"><b>${expiring.length} ${plural(expiring.length, "полис заканчивается", "полиса заканчиваются", "полисов заканчиваются")}</b> в ближайшие 30 дней: ${expiring.map(p => `«${p.type}» по ${p.cid} — до ${d2(p.to)}`).join("; ")}. Загрузите новые полисы.</div><a class="btn sm sec" href="#/insurance">К полисам</a></div>`;
+  html += `<div class="grid g4" style="margin-bottom:16px">
+    <div class="card kpi"><div class="l">Ближайший платёж</div><div class="v num">${np ? rub(np.amount - np.covered) : "—"}</div><div class="d">${np ? d2(np.date) + " · " + np.cid : "Нет платежей"}</div>${np && can("payments") ? `<a class="btn sm" style="margin-top:12px" href="#/payments/bill/${encodeURIComponent(np.cid)}/next">${ic("qr", 'width="15" height="15"')} Счёт с QR</a>` : ""}</div>
+    <div class="card kpi"><div class="l">Сальдо по договорам</div><div class="v num ${totalSaldo < -0.01 ? "bad" : totalSaldo > 0.01 ? "ok" : ""}">${rub(Math.abs(totalSaldo))}</div><div class="d">${totalSaldo < -0.01 ? "задолженность" : totalSaldo > 0.01 ? "переплата" : "расчёты сверены"} на ${d2(TODAY)}</div>${can("payments") ? `<a class="btn sm sec" style="margin-top:12px" href="#/payments/saldo">Подробнее</a>` : ""}</div>
+    <div class="card kpi"><div class="l">Действующие договоры</div><div class="v">${cs.length}</div><div class="d">на ${rub(cs.reduce((a, c) => a + c.sum, 0))}</div><a class="btn sm sec" style="margin-top:12px" href="#/contracts">Все договоры</a></div>
+    <div class="card kpi"><div class="l">Запросы в работе</div><div class="v">${activeReqs()}</div><div class="d">${S.requests.filter(r => r.status === "done" && inScope(r.cid)).length} выполнено</div>${can("requests") ? `<a class="btn sm sec" style="margin-top:12px" href="#/requests">Мои запросы</a>` : ""}</div>
+  </div>`;
+  html += `<h2>Быстрые действия</h2><div class="qa" style="margin-bottom:18px">
+    ${can("payments") ? `<button onclick="location.hash='#/payments/bill'">${ic("qr", 'width="22" height="22" style="color:var(--blue)"')}Счёт на оплату<span>С QR-кодом, сразу</span></button>` : ""}
+    ${can("docs") ? `<button onclick="modalAct()">${ic("act", 'width="22" height="22" style="color:var(--blue)"')}Акт сверки<span>Сформирует 1С за пару минут</span></button>` : ""}
+    ${can("requests") ? `<button onclick="modalRequest('spravka')">${ic("req", 'width="22" height="22" style="color:var(--blue)"')}Справка о задолженности<span>Автоматически из 1С</span></button>` : ""}
+    ${can("docs") ? `<button onclick="modalOriginals()">${ic("mail", 'width="22" height="22" style="color:var(--blue)"')}Запросить оригиналы<span>Почтой или через ЭДО</span></button>` : ""}
+  </div>`;
+  html += `<div class="grid g2">
+    <div class="card"><div class="hd" style="margin-bottom:6px"><h2 style="margin:0">Предстоящие платежи</h2><span class="sp"></span>${can("payments") ? `<a class="small" href="#/payments/calendar">Календарь →</a>` : ""}</div>
+      <div class="list">${upcoming.slice(0, 5).map(p => `<div class="it"><div class="ic">${ic("cal")}</div><div style="flex:1;min-width:0"><b style="color:var(--navy)">${rub(p.amount - p.covered)}</b><div class="small muted">${d2(p.date)} · ${p.cid} · ${p.kind}</div></div>${statusTag(p.st)}</div>`).join("") || '<div class="empty">Нет предстоящих платежей</div>'}</div></div>
+    <div class="card"><div class="hd" style="margin-bottom:6px"><h2 style="margin:0">Новые документы</h2><span class="sp"></span>${can("docs") ? `<a class="small" href="#/documents">Все документы →</a>` : ""}</div>
+      <div class="list">${lastDocs.map(d => `<div class="it"><div class="ic">${ic("docs")}</div><div style="flex:1;min-width:0"><b style="color:var(--navy)">${d.no}</b> <span class="small muted">за ${MONTHS[new Date(d.period).getMonth()]} ${new Date(d.period).getFullYear()}</span><div class="small muted">${d.cid} · ${rub(d.amount)}</div></div><button class="btn ghost sm" onclick="viewInvoice('${d.id}')">Открыть</button></div>`).join("") || '<div class="empty">Нет доступа к документам</div>'}</div></div>
+  </div>`;
+  return { title: "Главная", html };
+};
+
+/* ---------- ДОГОВОРЫ ---------- */
+let cFilter = { q: "", kind: "all" };
+VIEWS.contracts = p => {
+  if (p[1]) return viewContract(p[1], p[2]);
+  const kinds = [...new Set(myContracts().map(c => c.kind))];
+  const list = myContracts().filter(c => (cFilter.kind === "all" || c.kind === cFilter.kind) && (!cFilter.q || (c.id + " " + c.subjects.map(s => s.name + " " + Object.values(s.props).join(" ")).join(" ")).toLowerCase().includes(cFilter.q.toLowerCase())));
+  const html = `<div class="hd"><div><h1>Договоры лизинга</h1><div class="muted">Действующие договоры компании${me().scope !== "all" ? " — доступные вам" : ""}</div></div></div>
+  <div class="filters"><input class="inp" id="cq" placeholder="Номер договора, предмет, VIN, госномер" value="${esc(cFilter.q)}" oninput="cFilter.q=this.value;render(true)" style="min-width:280px">
+    <div class="chips"><button class="chip ${cFilter.kind === "all" ? "on" : ""}" onclick="cFilter.kind='all';render(true)">Все</button>${kinds.map(k => `<button class="chip ${cFilter.kind === k ? "on" : ""}" onclick="cFilter.kind='${k}';render(true)">${k}</button>`).join("")}</div></div>
+  <div class="card pad0 tw"><table class="t"><thead><tr><th>Договор</th><th>Предмет лизинга</th><th class="r">Сумма договора</th><th class="r">Остаток к оплате</th><th>Следующий платёж</th><th>Сальдо</th><th>Завершение</th></tr></thead><tbody>
+  ${list.map(c => { const n = nextPay(c); return `<tr class="click" onclick="location.hash='#/contracts/${encodeURIComponent(c.id)}'"><td><b style="color:var(--navy)">${c.id}</b><div class="small muted">от ${d2(c.sign)}</div></td><td>${esc(c.subjects[0].name)}${c.subjects.length > 1 ? ` <span class="tag grey">+${c.subjects.length - 1}</span>` : ""}<div class="small muted">${c.kind}</div></td><td class="r num">${rub(c.sum)}</td><td class="r num">${rub(remaining(c))}</td><td class="nowrap">${n ? `${rub(n.amount - n.covered)}<div class="small muted">${d2(n.date)}</div>` : "—"}</td><td class="nowrap">${saldoTxt(saldo(c.id))}</td><td class="nowrap">${d2(c.end)}</td></tr>`; }).join("") || `<tr><td colspan="7" class="empty">Ничего не нашли</td></tr>`}
+  </tbody></table></div>`;
+  return { title: "Договоры", html };
+};
+function viewContract(id, tab = "subjects") {
+  const c = contract(id); if (!c || !inScope(id)) return { title: "Договор", html: `<div class="card empty">Договор не найден или недоступен</div>` };
+  const ps = payStatus(c); const paidN = ps.filter(p => p.st === "paid").length; const total = ps.reduce((a, p) => a + p.amount, 0); const paidSum = paidTotal(c.id);
+  const T = (k, l) => `<a href="#/contracts/${encodeURIComponent(id)}/${k}" class="${tab === k ? "on" : ""}">${l}</a>`;
+  let body = "";
+  if (tab === "subjects") body = `<div class="grid g2">${c.subjects.map((s, i) => `<div class="card"><div style="display:flex;gap:12px;align-items:center;margin-bottom:12px"><div class="ic">${ic("car")}</div><div><b style="color:var(--navy)">${esc(s.name)}</b><div class="small muted">${s.type}</div></div></div><div class="kv">${Object.entries(s.props).slice(0, 4).map(([k, v]) => `<div><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`).join("")}</div><a class="btn sm sec" style="margin-top:14px" href="#/contracts/${encodeURIComponent(id)}/subject-${i}">Карточка предмета →</a></div>`).join("")}</div>`;
+  else if (tab.startsWith("subject-")) {
+    const i = +tab.split("-")[1]; const s = c.subjects[i];
+    const pols = S.policies.filter(p => p.cid === id && p.subj === i);
+    body = `<div class="crumbs"><a href="#/contracts/${encodeURIComponent(id)}">← ко всем предметам договора</a></div><div class="card" style="margin-bottom:16px"><h2>${esc(s.name)}</h2><div class="kv">${Object.entries(s.props).map(([k, v]) => `<div><div class="k">${k}</div><div class="v">${esc(v)}</div></div>`).join("")}<div><div class="k">Договор</div><div class="v">${c.id}</div></div><div><div class="k">Передан лизингополучателю</div><div class="v">${d2(c.transfer)}</div></div></div></div>
+      <div class="grid g2"><div class="card"><h3>Документы на предмет</h3><div class="list">${["Акт приёма-передачи", s.props["VIN"] ? "Электронный ПТС (выписка)" : "Паспорт оборудования", "Спецификация к договору"].map(t => `<div class="it"><div class="ic">${ic("docs")}</div><div style="flex:1">${t}</div><button class="btn ghost sm" onclick="viewScan('${esc(t)} — ${esc(s.name)}')">Открыть</button></div>`).join("")}</div></div>
+      ${can("insurance") ? `<div class="card"><h3>Страховые полисы</h3><div class="list">${pols.map(p => { const st = polStatus(p); return `<div class="it"><div class="ic">${ic("shield")}</div><div style="flex:1"><b style="color:var(--navy)">${p.type}</b> · ${p.no}<div class="small muted">${p.insurer} · до ${d2(p.to)}</div></div><span class="tag ${st[1]}">${st[0]}</span></div>`; }).join("") || '<div class="empty">Полисов нет</div>'}</div></div>` : ""}</div>`;
+  }
+  else if (tab === "schedule") body = scheduleTables(c);
+  else if (tab === "docs") body = `<div class="card pad0 tw"><table class="t"><thead><tr><th>Документ</th><th>Дата</th><th></th></tr></thead><tbody>${S.scans.filter(s => s.cid === id).map(s => `<tr><td>${ic("docs", 'width="16" height="16" style="vertical-align:-3px;color:var(--blue)"')} ${esc(s.title)}</td><td>${d2(s.date)}</td><td class="r"><button class="btn ghost sm" onclick="viewScan('${esc(s.title)}')">Открыть скан</button></td></tr>`).join("")}${can("docs") ? S.invoices.filter(i => i.cid === id).slice(-3).reverse().map(i => `<tr><td>${ic("docs", 'width="16" height="16" style="vertical-align:-3px;color:var(--blue)"')} ${i.no} за ${MONTHS[new Date(i.period).getMonth()]} ${new Date(i.period).getFullYear()}</td><td>${d2(i.date)}</td><td class="r"><button class="btn ghost sm" onclick="viewInvoice('${i.id}')">Открыть</button></td></tr>`).join("") : ""}</tbody></table></div>${can("docs") ? `<a class="btn sec sm" style="margin-top:12px" href="#/documents/invoices/${encodeURIComponent(id)}">Все счета-фактуры по договору →</a>` : ""}`;
+  else if (tab === "pays") body = `<div class="card pad0 tw"><table class="t"><thead><tr><th>Дата</th><th>Документ</th><th class="r">Сумма</th></tr></thead><tbody>${S.payments.filter(p => p.cid === id).sort((a, b) => new Date(b.date) - new Date(a.date)).map(p => `<tr><td>${d2(p.date)}</td><td>${esc(p.doc)}</td><td class="r num">${rub(p.amount)}</td></tr>`).join("")}</tbody></table></div>`;
+  const html = `<div class="crumbs"><a href="#/contracts">Договоры</a> / ${c.id}</div>
+  <div class="hd"><div><h1>Договор ${c.id}</h1><div class="muted">${esc(c.subjects.map(s => s.name).join(", "))}</div></div><span class="sp"></span>
+    ${can("payments") ? `<a class="btn" href="#/payments/bill/${encodeURIComponent(id)}/next">${ic("qr", 'width="16" height="16"')} Счёт на оплату</a>` : ""}
+    ${can("docs") ? `<button class="btn sec" onclick="modalAct('${id}')">Акт сверки</button>` : ""}
+    ${can("requests") ? `<button class="btn sec" onclick="modalRequest('spravka','${id}')">Справка</button>` : ""}</div>
+  <div class="card" style="margin-bottom:16px"><div class="kv">
+    <div><div class="k">Дата заключения</div><div class="v">${d2(c.sign)}</div></div><div><div class="k">Дата передачи</div><div class="v">${d2(c.transfer)}</div></div><div><div class="k">Дата завершения</div><div class="v">${d2(c.end)}</div></div><div><div class="k">Срок</div><div class="v">${c.term} мес.</div></div>
+    <div><div class="k">Сумма договора</div><div class="v num">${rub(c.sum)}</div></div><div><div class="k">Аванс</div><div class="v num">${rub(c.advance)}</div></div><div><div class="k">Ежемесячный платёж</div><div class="v num">${rub(schedOf(c).monthly)}</div></div><div><div class="k">Выкупной платёж</div><div class="v num">${rub(c.buyout)}</div></div>
+    <div><div class="k">Оплачено</div><div class="v num">${rub(paidSum)}</div></div><div><div class="k">Остаток к оплате</div><div class="v num">${rub(remaining(c))}</div></div><div><div class="k">Сальдо</div><div class="v">${saldoTxt(saldo(c.id))}</div></div><div><div class="k">Сканы договора и графика</div><div class="v"><a onclick="viewScan('Договор лизинга ${c.id}')">Договор</a> · <a onclick="viewScan('График платежей к договору ${c.id}')">График</a></div></div>
+  </div><div style="margin-top:16px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px"><span class="muted">Оплачено ${paidN} из ${ps.length} платежей</span><b style="color:var(--navy)">${Math.round(paidSum / total * 100)}%</b></div><div class="prog"><i style="width:${Math.min(100, paidSum / total * 100)}%"></i></div></div></div>
+  <div class="tabs">${T("subjects", "Предметы лизинга (" + c.subjects.length + ")")}${T("schedule", "График платежей и начислений")}${T("docs", "Документы")}${T("pays", "История оплат")}</div>${body}`;
+  return { title: "Договор " + c.id, html };
+}
+function scheduleTables(c) {
+  const ps = payStatus(c); const acc = schedOf(c).accr;
+  return `<div class="grid g2"><div class="card pad0"><div style="padding:14px 16px 0;display:flex;align-items:center"><h3 style="flex:1">График платежей</h3><button class="btn ghost sm" onclick="exportCSV('${c.id}','pays')">${ic("down", 'width="15" height="15"')} Excel</button></div><div class="tw" style="max-height:460px;overflow:auto"><table class="t"><thead><tr><th>№</th><th>Дата</th><th class="r">Сумма</th><th>Статус</th></tr></thead><tbody>${ps.map(p => `<tr><td>${p.n || "—"}</td><td class="nowrap">${d2(p.date)}<div class="small muted">${p.kind}</div></td><td class="r num">${rub(p.amount)}${p.st === "over" && p.covered > 0 ? `<div class="small" style="color:var(--bad)">не оплачено ${rub(p.amount - p.covered)}</div>` : ""}</td><td>${statusTag(p.st)}</td></tr>`).join("")}</tbody></table></div></div>
+    <div class="card pad0"><div style="padding:14px 16px 0;display:flex;align-items:center"><h3 style="flex:1">График начислений</h3><button class="btn ghost sm" onclick="exportCSV('${c.id}','accr')">${ic("down", 'width="15" height="15"')} Excel</button></div><div class="tw" style="max-height:460px;overflow:auto"><table class="t"><thead><tr><th>Период</th><th class="r">Лизинговая услуга с НДС</th><th class="r">в т.ч. НДС ${VAT}%</th></tr></thead><tbody>${acc.map(a => `<tr style="${new Date(a.period) > TODAY ? "color:var(--grey)" : ""}"><td class="nowrap">${MONTHS[new Date(a.period).getMonth()]} ${new Date(a.period).getFullYear()}</td><td class="r num">${rub(a.amount)}</td><td class="r num">${rub(a.vat)}</td></tr>`).join("")}</tbody></table></div></div></div>`;
+}
+function exportCSV(cid, kind) {
+  const c = contract(cid); let rows;
+  if (kind === "pays") rows = [["№", "Дата", "Вид", "Сумма", "Статус"], ...payStatus(c).map(p => [p.n, d2(p.date), p.kind, p.amount, p.st === "paid" ? "Оплачен" : p.st === "over" ? "Просрочен" : "Ожидается"])];
+  else rows = [["Период", "Сумма с НДС", "НДС"], ...schedOf(c).accr.map(a => [MONTHS[new Date(a.period).getMonth()] + " " + new Date(a.period).getFullYear(), a.amount, a.vat])];
+  const csv = "﻿" + rows.map(r => r.map(x => `"${String(x).replace(/"/g, '""')}"`).join(";")).join("\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = (kind === "pays" ? "График платежей " : "График начислений ") + cid.replace("/", "-") + ".csv"; a.click();
+  toast("Файл выгружен", "Откройте его в Excel");
+}
+
+/* ---------- ПЛАТЕЖИ ---------- */
+let calM = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+VIEWS.payments = p => {
+  const tab = p[1] || "calendar";
+  const T = (k, l) => `<a href="#/payments/${k}" class="${tab === k ? "on" : ""}">${l}</a>`;
+  let body = "";
+  if (tab === "calendar") {
+    const y = calM.getFullYear(), m = calM.getMonth(); const first = (new Date(y, m, 1).getDay() + 6) % 7; const days = new Date(y, m + 1, 0).getDate();
+    const items = myContracts().flatMap(c => payStatus(c).map(p => ({ ...p, cid: c.id }))).filter(p => { const d = new Date(p.date); return d.getFullYear() === y && d.getMonth() === m; });
+    let cells = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"].map(d => `<div class="h">${d}</div>`).join("");
+    for (let i = 0; i < first; i++) cells += `<div class="d o"></div>`;
+    for (let d = 1; d <= days; d++) { const its = items.filter(p => new Date(p.date).getDate() === d); const isT = y === TODAY.getFullYear() && m === TODAY.getMonth() && d === TODAY.getDate();
+      cells += `<div class="d ${isT ? "today" : ""}"><div class="n">${d}</div>${its.map(p => `<span class="p ${p.st}" title="${p.cid}: ${rub(p.amount)}" onclick="location.hash='#/contracts/${encodeURIComponent(p.cid)}/schedule'">${p.cid.slice(3)} · ${rub(p.amount - (p.st === "paid" ? 0 : p.covered))}</span>`).join("")}</div>`; }
+    const sum = items.reduce((a, p) => a + p.amount, 0), left = items.filter(p => p.st !== "paid").reduce((a, p) => a + p.amount - p.covered, 0);
+    body = `<div class="grid" style="grid-template-columns:minmax(0,3fr) minmax(240px,1fr)"><div class="card"><div class="hd" style="margin-bottom:12px"><button class="btn sec sm" onclick="calM=new Date(calM.getFullYear(),calM.getMonth()-1,1);render(true)">←</button><h2 style="margin:0;text-transform:capitalize">${MONTHS[m]} ${y}</h2><button class="btn sec sm" onclick="calM=new Date(calM.getFullYear(),calM.getMonth()+1,1);render(true)">→</button><span class="sp"></span><button class="btn ghost sm" onclick="calM=new Date(TODAY.getFullYear(),TODAY.getMonth(),1);render(true)">Сегодня</button></div><div class="cal">${cells}</div>
+      <div class="small muted" style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap"><span><span class="tag ok">■</span> оплачен</span><span><span class="tag info">■</span> ожидается</span><span><span class="tag bad">■</span> просрочен</span></div></div>
+      <div class="card"><h3>Итого за месяц</h3><div class="kpi"><div class="v num">${rub(sum)}</div><div class="d">осталось оплатить ${rub(left)}</div></div><div class="list" style="margin-top:10px">${items.map(p => `<div class="it"><div style="flex:1"><b style="color:var(--navy)">${rub(p.amount)}</b><div class="small muted">${d2(p.date)} · ${p.cid}${p.st === "over" && p.covered > 0 ? ` · <span style="color:var(--bad)">не оплачено ${rub(p.amount - p.covered)}</span>` : ""}</div></div>${statusTag(p.st)}</div>`).join("") || '<div class="empty">Платежей нет</div>'}</div>${left > 0 ? `<a class="btn block" style="margin-top:12px" href="#/payments/bill">${ic("qr", 'width="16" height="16"')} Счёт на оплату</a>` : ""}</div></div>`;
+  } else if (tab === "saldo") {
+    const cs = myContracts(); const tot = cs.reduce((a, c) => a + saldo(c.id), 0);
+    body = `<div class="alert info">Сальдо — разница между оплаченным и начисленным к оплате на ${d2(TODAY)}. Данные из 1С на ${tm(S.sync.last)}.</div><div class="card pad0 tw"><table class="t"><thead><tr><th>Договор</th><th class="r">Начислено к оплате</th><th class="r">Оплачено</th><th>Сальдо</th><th></th></tr></thead><tbody>
+      ${cs.map(c => `<tr><td><a href="#/contracts/${encodeURIComponent(c.id)}"><b>${c.id}</b></a><div class="small muted">${esc(c.subjects[0].name)}</div></td><td class="r num">${rub(dueTotal(c.id))}</td><td class="r num">${rub(paidTotal(c.id))}</td><td>${saldoTxt(saldo(c.id))}</td><td class="r">${saldo(c.id) < -0.01 ? `<a class="btn sm" href="#/payments/bill/${encodeURIComponent(c.id)}/debt">Счёт на долг</a>` : ""}</td></tr>`).join("")}
+      <tr><td><b>Итого</b></td><td class="r num"><b>${rub(cs.reduce((a, c) => a + dueTotal(c.id), 0))}</b></td><td class="r num"><b>${rub(cs.reduce((a, c) => a + paidTotal(c.id), 0))}</b></td><td>${saldoTxt(tot)}</td><td></td></tr></tbody></table></div>`;
+  } else if (tab === "schedule") {
+    const cid = p[2] && inScope(p[2]) ? p[2] : myContracts()[0].id;
+    body = `<div class="filters"><select class="sel" onchange="location.hash='#/payments/schedule/'+encodeURIComponent(this.value)">${cOpts(false, cid)}</select></div>${scheduleTables(contract(cid))}`;
+  } else if (tab === "bill") return viewBill(p);
+  else if (tab === "bills") {
+    body = billsTable(S.bills.filter(b => inScope(b.cid)));
+  }
+  const html = `<div class="hd"><div><h1>Платежи</h1><div class="muted">Календарь оплат, сальдо, графики и счета</div></div><span class="sp"></span><a class="btn" href="#/payments/bill">${ic("qr", 'width="16" height="16"')} Счёт на оплату</a></div>
+  <div class="tabs">${T("calendar", "Календарь оплат")}${T("saldo", "Сальдо")}${T("schedule", "График платежей и начислений")}${T("bills", "Мои счета" + (S.bills.length ? " (" + S.bills.length + ")" : ""))}</div>${body}`;
+  return { title: "Платежи", html };
+};
+function billsTable(bs) {
+  return `<div class="card pad0 tw"><table class="t"><thead><tr><th>Счёт</th><th>Договор</th><th class="r">Сумма</th><th>Статус оплаты</th><th></th></tr></thead><tbody>${bs.map(b => `<tr><td><b style="color:var(--navy)">№ ${b.no}</b><div class="small muted">от ${d2(b.date)}</div></td><td>${b.cid}</td><td class="r num">${rub(b.amount)}</td><td>${b.paid ? '<span class="tag ok">Оплачен</span>' : b.status ? `<span class="tag warn">${esc(b.status)}</span>` : '<span class="tag info">Выставлен</span>'}</td><td class="r"><a class="btn ghost sm" href="#/payments/bill/view/${b.id}">Открыть</a></td></tr>`).join("") || `<tr><td colspan="5" class="empty">Вы ещё не формировали счета. Нажмите «Счёт на оплату».</td></tr>`}</tbody></table></div>`;
+}
+function viewBill(p) {
+  if (p[2] === "view") {
+    const b = S.bills.find(b => b.id === p[3]); if (!b) return { title: "Счёт", html: `<div class="card empty">Счёт не найден</div>` };
+    const job = S.jobs.find(j => j.type === "payment" && j.payload.bid === b.id);
+    const html = `<div class="crumbs"><a href="#/payments/bills">Платежи</a> / Счёт № ${b.no}</div>
+    <div class="hd"><div><h1>Счёт на оплату № ${b.no}</h1><div class="muted">Сформирован ${d2(b.date)} в кабинете — без обращения к сотрудникам</div></div><span class="sp"></span>
+      <button class="btn sec" onclick="window.print()">${ic("down", 'width="15" height="15"')} PDF</button><button class="btn sec" onclick="toast('Счёт отправлен','на ${esc(me().email)}')">${ic("mail", 'width="15" height="15"')} На e-mail</button></div>
+    <div class="grid" style="grid-template-columns:minmax(0,2fr) minmax(260px,1fr)">
+      <div class="doc"><h3>СЧЁТ НА ОПЛАТУ № ${b.no} от ${dLong(b.date)}</h3>
+        <p><b>Получатель:</b> ООО «Восток-лизинг» · ИНН 0000000000 (демо) · р/с 40702810XXXXXXXXXXXX (демо) · Банк (демо), БИК 04XXXXXXX</p>
+        <p><b>Плательщик:</b> ${esc(S.company.name)} · ИНН ${S.company.inn}</p>
+        <table><tr><th>№</th><th>Наименование</th><th>Сумма, ₽</th></tr><tr><td>1</td><td>${esc(b.purpose)}</td><td style="text-align:right">${rub(b.amount)}</td></tr><tr><td colspan="2" style="text-align:right"><b>Итого, в т.ч. НДС ${VAT}%</b></td><td style="text-align:right"><b>${rub(b.amount)}</b></td></tr></table>
+        <p style="margin-top:12px"><b>Назначение платежа:</b> ${esc(b.purpose)}. В т.ч. НДС ${VAT}% — ${rub(Math.round(b.amount * VAT / (100 + VAT) * 100) / 100)}</p></div>
+      <div class="card" style="text-align:center"><h3>Оплата по QR-коду</h3>${qrSVG(b.no + b.amount)}<p class="small muted">Отсканируйте код в приложении своего банка — реквизиты и сумма заполнятся сами.<br>(В демо QR-код условный.)</p>
+        ${b.paid ? `<div class="alert ok">✓ Платёж проведён в 1С. Сальдо обновлено.</div><a class="btn sec block" href="#/payments/saldo">Посмотреть сальдо</a>` : job || b.status ? `<div class="alert warn" style="text-align:left"><span class="spin dark"></span><div class="sp">${esc(b.status || "Платёж отправлен")}</div></div><div class="small muted">Статус обновится автоматически, когда платёж поступит в 1С.</div>` : `<button class="btn block" onclick="payBill('${b.id}')">Имитировать оплату в банке</button><div class="small muted" style="margin-top:8px">Только для демо: так кабинет увидит поступление платежа через обмен с 1С.</div>`}
+      </div></div>`;
+    return { title: "Счёт № " + b.no, html };
+  }
+  const cid = p[2] && inScope(p[2]) ? p[2] : myContracts()[0].id; const mode = p[3] || "next";
+  const c = contract(cid); const n = nextPay(c); const debt = Math.max(0, -saldo(cid));
+  const val = mode === "debt" ? debt : mode === "next" ? (n ? n.amount - n.covered : 0) : "";
+  const html = `<div class="crumbs"><a href="#/payments">Платежи</a> / Новый счёт</div><div class="hd"><div><h1>Счёт на оплату</h1><div class="muted">Счёт формируется сразу по данным сальдо — без участия сотрудника</div></div></div>
+  <div class="card" style="max-width:640px"><form id="fBill">
+    <div class="field"><label for="b1">Договор</label><select class="sel" id="b1" onchange="location.hash='#/payments/bill/'+encodeURIComponent(this.value)+'/${mode}'">${cOpts(false, cid)}</select></div>
+    <div class="field"><label>Что оплатить</label><div class="chips">
+      <button type="button" class="chip ${mode === "next" ? "on" : ""}" onclick="location.hash='#/payments/bill/${encodeURIComponent(cid)}/next'">Ближайший платёж${n ? " · " + d2(n.date) : ""}</button>
+      <button type="button" class="chip ${mode === "debt" ? "on" : ""}" ${debt ? "" : "disabled"} onclick="location.hash='#/payments/bill/${encodeURIComponent(cid)}/debt'">Задолженность${debt ? " · " + rub(debt) : " — нет"}</button>
+      <button type="button" class="chip ${mode === "custom" ? "on" : ""}" onclick="location.hash='#/payments/bill/${encodeURIComponent(cid)}/custom'">Другая сумма</button></div></div>
+    <div class="field"><label for="b2">Сумма, ₽</label><input class="inp" id="b2" inputmode="decimal" value="${val}" ${mode === "custom" ? "" : "readonly"} placeholder="Введите сумму"></div>
+    <div class="small muted" style="margin-bottom:14px">Сальдо по договору: ${saldoTxt(saldo(cid))}</div>
+    <button class="btn" type="submit">${ic("qr", 'width="16" height="16"')} Сформировать счёт с QR-кодом</button></form></div>`;
+  setTimeout(() => $("#fBill")?.addEventListener("submit", e => {
+    e.preventDefault(); const amount = parseFloat(String($("#b2").value).replace(/\s/g, "").replace(",", "."));
+    if (!(amount > 0)) { toast("Укажите сумму", "Сумма должна быть больше нуля"); return; }
+    const b = { id: uid(), no: "ВЛ-" + (++S.billNo), cid, amount, date: iso(TODAY), purpose: (mode === "debt" ? "Погашение задолженности" : "Лизинговый платёж") + " по договору " + cid };
+    S.bills.unshift(b); save(); location.hash = "#/payments/bill/view/" + b.id; toast("Счёт сформирован", "№ " + b.no + " на " + rub(amount));
+  }), 0);
+  return { title: "Счёт на оплату", html };
+}
+function payBill(id) { const b = S.bills.find(b => b.id === id); b.status = "Платёж отправлен банком"; startJob("payment", { bid: id }); save(); render(true); toast("Платёж отправлен", "Ждём поступление в 1С — статус обновится сам"); }
+function qrSVG(seed) {
+  let h = 0; for (const ch of String(seed)) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+  const rnd = () => (h = (h * 1103515245 + 12345) >>> 0) / 4294967296; const N = 29; let r = "";
+  const finder = (x, y) => `<rect x="${x}" y="${y}" width="7" height="7" fill="#22384D"/><rect x="${x + 1}" y="${y + 1}" width="5" height="5" fill="#fff"/><rect x="${x + 2}" y="${y + 2}" width="3" height="3" fill="#22384D"/>`;
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) { const inF = (x < 8 && y < 8) || (x > N - 9 && y < 8) || (x < 8 && y > N - 9); if (!inF && rnd() > .52) r += `<rect x="${x}" y="${y}" width="1" height="1"/>`; }
+  return `<svg class="qr" viewBox="-2 -2 ${N + 4} ${N + 4}" style="margin:8px auto;display:block"><rect x="-2" y="-2" width="${N + 4}" height="${N + 4}" fill="#fff"/><g fill="#22384D">${r}</g>${finder(0, 0)}${finder(N - 7, 0)}${finder(0, N - 7)}</svg>`;
+}
+
+/* ---------- ДОКУМЕНТЫ ---------- */
+let dF = { cid: "all", year: "2026", q: "all", m: "all" }; let dSel = new Set();
+VIEWS.documents = p => {
+  const tab = p[1] || "invoices"; if (p[1] === "invoices" && p[2]) dF.cid = p[2];
+  const T = (k, l) => `<a href="#/documents/${k}" class="${tab === k ? "on" : ""}">${l}</a>`;
+  let body = "";
+  if (tab === "invoices") {
+    const list = S.invoices.filter(i => inScope(i.cid) && (dF.cid === "all" || i.cid === dF.cid) && (dF.year === "all" || new Date(i.period).getFullYear() == dF.year) && (dF.q === "all" || Math.floor(new Date(i.period).getMonth() / 3) + 1 == dF.q) && (dF.m === "all" || new Date(i.period).getMonth() == dF.m)).sort((a, b) => new Date(b.date) - new Date(a.date));
+    const years = [...new Set(S.invoices.map(i => new Date(i.period).getFullYear()))].sort().reverse();
+    const allSel = list.length && list.every(i => dSel.has(i.id));
+    body = `<div class="filters"><select class="sel" onchange="dF.cid=this.value;dSel.clear();render(true)">${cOpts(true, dF.cid)}</select>
+      <select class="sel" onchange="dF.year=this.value;render(true)"><option value="all">Все годы</option>${years.map(y => `<option ${dF.year == y ? "selected" : ""}>${y}</option>`).join("")}</select>
+      <select class="sel" onchange="dF.q=this.value;dF.m='all';render(true)"><option value="all">Все кварталы</option>${[1, 2, 3, 4].map(q => `<option value="${q}" ${dF.q == q ? "selected" : ""}>${q} квартал</option>`).join("")}</select>
+      <select class="sel" onchange="dF.m=this.value;render(true)"><option value="all">Все месяцы</option>${MONTHS.map((m, i) => `<option value="${i}" ${dF.m == i ? "selected" : ""}>${m}</option>`).join("")}</select>
+      <span class="sp" style="flex:1"></span><span class="small muted">Выбрано: <b>${dSel.size}</b></span>
+      <button class="btn sec sm" ${dSel.size ? "" : "disabled"} onclick="downloadZip()">${ic("down", 'width="15" height="15"')} Скачать архивом</button>
+      <button class="btn sm" ${dSel.size ? "" : "disabled"} onclick="modalOriginals()">${ic("mail", 'width="15" height="15"')} Запросить оригиналы</button></div>
+      <div class="card pad0 tw"><table class="t"><thead><tr><th style="width:34px"><input type="checkbox" ${allSel ? "checked" : ""} onchange="${list.map(i => i.id).join(",") ? `(this.checked?[${list.map(i => `'${i.id}'`).join(",")}].forEach(x=>dSel.add(x)):dSel.clear());render(true)` : ""}" aria-label="Выбрать все"></th><th>Документ</th><th>Период</th><th>Договор</th><th class="r">Сумма с НДС</th><th class="r">НДС</th><th></th></tr></thead><tbody>
+      ${list.map(i => `<tr><td><input type="checkbox" ${dSel.has(i.id) ? "checked" : ""} onchange="this.checked?dSel.add('${i.id}'):dSel.delete('${i.id}');render(true)" aria-label="Выбрать"></td><td><b style="color:var(--navy)">${i.no}</b><div class="small muted">от ${d2(i.date)}</div></td><td class="nowrap">${MONTHS[new Date(i.period).getMonth()]} ${new Date(i.period).getFullYear()}</td><td>${i.cid}</td><td class="r num">${rub(i.amount)}</td><td class="r num">${rub(i.vat)}</td><td class="r"><button class="btn ghost sm" onclick="viewInvoice('${i.id}')">Открыть</button></td></tr>`).join("") || `<tr><td colspan="7" class="empty">Документов за выбранный период нет</td></tr>`}</tbody></table></div>`;
+  } else if (tab === "acts") {
+    const jobs = S.requests.filter(r => r.type === "act" && r.status !== "done" && inScope(r.cid));
+    body = `<div class="hd" style="margin-bottom:12px"><span class="muted">Акт сверки формирует 1С по вашему запросу — обычно за пару минут.</span><span class="sp"></span><button class="btn" onclick="modalAct()">${ic("plus", 'width="15" height="15"')} Сформировать акт сверки</button></div>
+      ${jobs.map(r => `<div class="alert ${r.waiting ? "warn" : "info"}"><span class="spin dark"></span><div class="sp"><b>${esc(r.title)}</b> — ${r.waiting ? "ждёт связи с 1С, отправим автоматически" : esc(r.stages.at(-1)?.[0] || "в работе")}</div><a class="btn sm sec" href="#/requests/${r.id}">Статус</a></div>`).join("")}
+      <div class="card pad0 tw"><table class="t"><thead><tr><th>Акт сверки</th><th>Период</th><th>Сформирован</th><th></th></tr></thead><tbody>${S.acts.filter(a => inScope(a.cid)).map(a => `<tr><td><b style="color:var(--navy)">${esc(a.title)}</b> ${a.fresh ? '<span class="tag ok">Новый</span>' : ""}</td><td class="nowrap">${d2(a.from)} — ${d2(a.to)}</td><td>${d2(a.date)}</td><td class="r"><button class="btn ghost sm" onclick="viewAct('${a.id}')">Открыть</button></td></tr>`).join("")}</tbody></table></div>`;
+  } else if (tab === "scans") {
+    body = myContracts().map(c => `<div class="card" style="margin-bottom:12px"><h3>${c.id} · ${esc(c.subjects[0].name)}</h3><div class="list">${S.scans.filter(s => s.cid === c.id).map(s => `<div class="it"><div class="ic">${ic("docs")}</div><div style="flex:1">${esc(s.title)}<div class="small muted">${d2(s.date)}</div></div><button class="btn ghost sm" onclick="viewScan('${esc(s.title)}')">Открыть скан</button></div>`).join("")}</div></div>`).join("");
+  } else if (tab === "originals") {
+    const rs = S.requests.filter(r => r.type === "originals" && inScope(r.cid));
+    body = `<div class="hd" style="margin-bottom:12px"><span class="muted">Выберите документы на вкладке «Счета-фактуры» или создайте запрос здесь.</span><span class="sp"></span><button class="btn" onclick="modalOriginals()">${ic("plus", 'width="15" height="15"')} Запросить оригиналы</button></div>` + reqTable(rs);
+  }
+  const html = `<div class="hd"><div><h1>Документы</h1><div class="muted">Счета-фактуры, акты сверки, сканы договоров, оригиналы</div></div></div>
+  <div class="tabs">${T("invoices", "Счета-фактуры (УПД)")}${T("acts", "Акты сверки")}${T("scans", "Договоры и графики")}${T("originals", "Оригиналы")}</div>${body}`;
+  return { title: "Документы", html };
+};
+function downloadZip() {
+  const items = S.invoices.filter(i => dSel.has(i.id));
+  const txt = "Демо-архив документов «Восток-лизинг»\n\n" + items.map(i => `${i.no} от ${d2(i.date)} · ${i.cid} · ${rub(i.amount)}`).join("\n") + "\n\nВ рабочем кабинете здесь будет ZIP-архив с PDF-файлами.";
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([txt], { type: "text/plain" })); a.download = "Документы_" + items.length + "_шт.txt"; a.click();
+  toast("Архив сформирован", items.length + " " + plural(items.length, "документ", "документа", "документов"));
+}
+
+/* ---------- ЗАПРОСЫ ---------- */
+const REQ_TYPES = { act: "Акт сверки", spravka: "Справка", letter: "Письмо с графиком платежей", originals: "Оригиналы документов", other: "Иной запрос" };
+let rF = "all";
+function reqTable(rs) {
+  return `<div class="card pad0 tw"><table class="t"><thead><tr><th>Запрос</th><th>Тип</th><th>Договор</th><th>Создан</th><th>Статус</th></tr></thead><tbody>${rs.map(r => `<tr class="click" onclick="location.hash='#/requests/${r.id}'"><td><b style="color:var(--navy)">${r.id}</b> · ${esc(r.title)}<div class="small muted">${esc(r.stages.at(-1)?.[0] || "")}</div></td><td>${REQ_TYPES[r.type]}</td><td>${r.cid === "all" ? "Все" : r.cid}</td><td class="nowrap">${d2(r.created)} ${tm(r.created)}</td><td>${reqTag(r)}</td></tr>`).join("") || `<tr><td colspan="5" class="empty">Запросов нет</td></tr>`}</tbody></table></div>`;
+}
+VIEWS.requests = p => {
+  if (p[1]) return viewRequest(p[1]);
+  const rs = S.requests.filter(r => inScope(r.cid) && (rF === "all" || (rF === "work" ? r.status !== "done" : r.status === "done")));
+  const html = `<div class="hd"><div><h1>Запросы</h1><div class="muted">Типовые запросы обрабатывает 1С автоматически, остальные — персональный менеджер</div></div><span class="sp"></span><button class="btn" onclick="modalRequest()">${ic("plus", 'width="15" height="15"')} Новый запрос</button></div>
+  <div class="filters"><div class="chips">${[["all", "Все"], ["work", "В работе"], ["done", "Готовые"]].map(([k, l]) => `<button class="chip ${rF === k ? "on" : ""}" onclick="rF='${k}';render(true)">${l}</button>`).join("")}</div></div>${reqTable(rs)}`;
+  return { title: "Запросы", html };
+};
+function viewRequest(id) {
+  const r = S.requests.find(r => r.id === id); if (!r || !inScope(r.cid)) return { title: "Запрос", html: `<div class="card empty">Запрос не найден</div>` };
+  const flow = FLOWS[r.type]; const doneN = r.stages.length;
+  const tlDone = r.stages.map(s => `<div class="st done"><b>${esc(s[0])}</b><div class="small muted">${d2(s[1])} ${tm(s[1])}</div></div>`).join("");
+  const tlNext = r.status === "done" ? "" : flow.slice(doneN).map((s, i) => `<div class="st ${i === 0 ? "cur" : ""}"><b style="${i ? "color:var(--grey)" : ""}">${esc(i === 0 && r.waiting ? "Ждёт связи с 1С — отправим автоматически" : s[0])}</b></div>`).join("");
+  let res = "";
+  if (r.status === "done" && r.result) {
+    res = `<div class="card"><h3>Результат</h3>${r.result.text ? `<p>${esc(r.result.text)}</p>` : ""}${r.result.title ? `<div class="list"><div class="it"><div class="ic">${ic("docs")}</div><div style="flex:1"><b style="color:var(--navy)">${esc(r.result.title)}</b><div class="small muted">PDF · подписан ЭП Восток-лизинга (демо)</div></div><button class="btn sm" onclick="${r.result.actId ? `viewAct('${r.result.actId}')` : `viewScan('${esc(r.result.title)}')`}">Открыть</button></div></div>` : ""}${r.result.file ? `<div class="list"><div class="it"><div class="ic">${ic("docs")}</div><div style="flex:1">${esc(r.result.file)}</div><button class="btn ghost sm" onclick="viewScan('${esc(r.result.file)}')">Открыть</button></div></div>` : ""}</div>`;
+  }
+  const html = `<div class="crumbs"><a href="#/requests">Запросы</a> / ${r.id}</div><div class="hd"><div><h1>${esc(r.title)}</h1><div class="muted">${r.id} · ${REQ_TYPES[r.type]} · ${r.cid === "all" ? "все договоры" : r.cid}${r.channel ? " · " + (r.channel === "edo" ? "через ЭДО" : "Почтой России") : ""}</div></div><span class="sp"></span>${reqTag(r)}</div>
+  <div class="grid g2"><div class="card"><h3>Ход выполнения</h3><div class="tl">${tlDone}${tlNext}</div>${r.comment ? `<div class="hint"><b>Ваш комментарий:</b> ${esc(r.comment)}</div>` : ""}</div>${res || `<div class="card"><h3>Что происходит</h3><p class="muted small">${r.type === "other" ? "Запрос передан персональному менеджеру. Ответ появится здесь, мы пришлём уведомление." : "Запрос обрабатывается автоматически через обмен с 1С. Статус обновляется сам — страницу можно закрыть."}</p>${!S.sync.online ? `<div class="alert warn">1С сейчас недоступна. Запрос сохранён и уйдёт автоматически после восстановления связи.</div>` : ""}</div>`}</div>`;
+  return { title: "Запрос " + r.id, html };
+}
+
+/* ---------- СТРАХОВАНИЕ ---------- */
+VIEWS.insurance = () => {
+  const ps = actualPolicies().sort((a, b) => new Date(a.to) - new Date(b.to));
+  const html = `<div class="hd"><div><h1>Страхование</h1><div class="muted">Полисы по предметам лизинга — статусы и сканы</div></div></div>
+  ${ps.filter(p => polStatus(p)[1] === "warn").map(p => `<div class="alert warn"><div class="sp"><b>${p.type}</b> по ${p.cid} (${esc(contract(p.cid).subjects[p.subj].name)}) заканчивается через ${polStatus(p)[2]} ${plural(polStatus(p)[2], "день", "дня", "дней")}. Загрузите скан нового полиса.</div><label class="btn sm">Загрузить полис<input type="file" hidden onchange="uploadPolicy('${p.id}',this)"></label></div>`).join("")}
+  <div class="card pad0 tw"><table class="t"><thead><tr><th>Предмет лизинга</th><th>Договор</th><th>Вид</th><th>Страховщик · полис</th><th>Срок</th><th>Статус</th><th></th></tr></thead><tbody>
+  ${ps.map(p => { const st = polStatus(p); return `<tr><td>${esc(contract(p.cid).subjects[p.subj].name)}</td><td>${p.cid}</td><td><b style="color:var(--navy)">${p.type}</b></td><td>${esc(p.insurer)}<div class="small muted">${p.no}</div></td><td class="nowrap">${d2(p.from)} — ${d2(p.to)}</td><td><span class="tag ${st[1]}">${st[0]}</span></td><td class="r"><button class="btn ghost sm" onclick="viewScan('Полис ${esc(p.type)} ${p.no}')">Скан</button></td></tr>`; }).join("")}</tbody></table></div>`;
+  return { title: "Страхование", html };
+};
+function uploadPolicy(pid, input) {
+  const old = S.policies.find(p => p.id === pid);
+  const np = { ...old, id: uid(), no: old.no.replace(/\d$/, d => (+d + 1) % 10) + "-Н", from: iso(new Date(old.to).getTime() + 86400000), to: iso(addM(new Date(old.to), 12)), pending: true };
+  S.policies.push(np); startJob("policy", { pid: np.id }); save(); render(true);
+  toast("Полис загружен", (input.files[0]?.name || "скан") + " — передан в 1С на проверку");
+}
+
+/* ---------- УВЕДОМЛЕНИЯ ---------- */
+VIEWS.notifications = () => {
+  const icn = { pay: "card", doc: "docs", req: "req", ins: "shield", sys: "sync" };
+  const html = `<div class="hd"><div><h1>Уведомления</h1><div class="muted">О платежах, документах, запросах и полисах</div></div><span class="sp"></span><button class="btn sec" onclick="myNotes().forEach(n=>n.read=true);save();render(true)">Отметить все прочитанными</button></div>
+  <div class="card"><div class="list">${myNotes().map(n => `<div class="it" style="${n.read ? "" : "background:var(--pale2);margin:0 -18px;padding:11px 18px"}"><div class="ic">${ic(icn[n.type] || "bell")}</div><div style="flex:1"><div style="${n.read ? "" : "font-weight:600;color:var(--navy)"}">${esc(n.text)}</div><div class="small muted">${d2(n.t)} ${tm(n.t)}</div></div>${n.link ? `<a class="btn ghost sm" href="${n.link}" onclick="readNote('${n.id}')">Открыть</a>` : ""}</div>`).join("") || '<div class="empty">Уведомлений нет</div>'}</div></div>
+  <p class="small muted">Какие уведомления получать и куда — настраивается в <a href="#/profile">профиле</a>.</p>`;
+  return { title: "Уведомления", html };
+};
+function readNote(id) { const n = S.notes.find(n => n.id === id); if (n) { n.read = true; save(); } }
+
+/* ---------- КОМПАНИЯ И СОТРУДНИКИ ---------- */
+const RIGHTS = { contracts: "Договоры", payments: "Платежи и счета", docs: "Документы", requests: "Запросы", insurance: "Страхование", staff: "Сотрудники" };
+const ROLE_TPL = { "Бухгалтер": { contracts: 1, payments: 1, docs: 1, requests: 1, insurance: 0, staff: 0 }, "Юрист": { contracts: 1, payments: 0, docs: 1, requests: 1, insurance: 0, staff: 0 }, "Ответственный за технику": { contracts: 1, payments: 0, docs: 0, requests: 1, insurance: 1, staff: 0 } };
+VIEWS.company = () => {
+  const c = S.company;
+  const html = `<div class="hd"><div><h1>Компания и сотрудники</h1><div class="muted">Кабинет принадлежит компании. Доступ сотрудникам даёт только руководитель.</div></div><span class="sp"></span><button class="btn" onclick="modalUser()">${ic("plus", 'width="15" height="15"')} Пригласить сотрудника</button></div>
+  <div class="card" style="margin-bottom:16px"><div class="hd" style="margin-bottom:10px"><h2 style="margin:0">Реквизиты</h2><span class="sp"></span><span class="small muted">из 1С · изменить через персонального менеджера</span></div><div class="kv">
+    <div><div class="k">Наименование</div><div class="v">${esc(c.name)}</div></div><div><div class="k">ИНН / КПП</div><div class="v">${c.inn} / ${c.kpp}</div></div><div><div class="k">ОГРН</div><div class="v">${c.ogrn}</div></div><div><div class="k">Юридический адрес</div><div class="v">${esc(c.addr)}</div></div>
+    <div><div class="k">Владелец кабинета</div><div class="v">${esc(S.users.find(u => u.owner).fio)}</div></div><div><div class="k">ЭДО</div><div class="v">${c.edo.on ? "Подключено · " + esc(c.edo.op) : "Не подключено"}</div></div></div></div>
+  <div class="card pad0 tw"><table class="t"><thead><tr><th>Сотрудник</th><th>Роль</th><th>Права</th><th>Договоры</th><th>Статус</th><th></th></tr></thead><tbody>
+  ${S.users.map(u => `<tr><td><b style="color:var(--navy)">${esc(u.fio)}</b><div class="small muted">${esc(u.email)}</div></td><td>${esc(u.role)}${u.owner ? ' <span class="tag info">владелец</span>' : ""}</td><td class="small">${Object.keys(RIGHTS).filter(k => u.rights[k]).map(k => RIGHTS[k]).join(", ")}</td><td class="small">${u.scope === "all" ? "Все" : u.scope.join(", ")}</td><td>${u.status === "active" ? '<span class="tag ok">Активен</span>' : u.status === "invited" ? '<span class="tag warn">Приглашён</span>' : '<span class="tag grey">Заблокирован</span>'}</td>
+  <td class="r nowrap">${u.owner ? "" : `<button class="btn ghost sm" onclick="modalUser('${u.id}')">Права</button> ${u.status === "blocked" ? `<button class="btn ghost sm" onclick="setUser('${u.id}','active')">Разблокировать</button>` : `<button class="btn ghost sm" style="color:var(--bad)" onclick="setUser('${u.id}','blocked')">Заблокировать</button>`}`}</td></tr>`).join("")}</tbody></table></div>
+  <div class="hint" style="margin-top:14px">Сотрудники не могут зарегистрироваться сами. Руководитель приглашает их по e-mail, выбирает права и договоры. Смена владельца кабинета — через Восток-лизинг по заявлению компании.</div>`;
+  return { title: "Компания и сотрудники", html };
+};
+function setUser(id, st) { const u = S.users.find(u => u.id === id); u.status = st; save(); render(true); toast(st === "blocked" ? "Доступ заблокирован" : "Доступ восстановлен", u.fio); }
+function modalUser(id) {
+  const u = id ? S.users.find(x => x.id === id) : { fio: "", email: "", role: "Бухгалтер", rights: { ...ROLE_TPL["Бухгалтер"] }, scope: "all" };
+  openModal(id ? "Права сотрудника" : "Пригласить сотрудника", `<form id="fU">
+    ${id ? `<p><b>${esc(u.fio)}</b><br><span class="small muted">${esc(u.email)}</span></p>` : `<div class="field"><label for="u1">ФИО</label><input class="inp" id="u1" required placeholder="Сидоров Павел Олегович"></div><div class="field"><label for="u2">E-mail</label><input class="inp" id="u2" type="email" required placeholder="pavel@company.ru"></div>`}
+    <div class="field"><label for="u3">Роль</label><select class="sel" id="u3">${Object.keys(ROLE_TPL).map(r => `<option ${u.role === r ? "selected" : ""}>${r}</option>`).join("")}<option ${!ROLE_TPL[u.role] ? "selected" : ""}>Свой набор прав</option></select></div>
+    <div class="field"><label>Права</label>${Object.entries(RIGHTS).filter(([k]) => k !== "staff").map(([k, l]) => `<label class="chk"><input type="checkbox" name="rt" value="${k}" ${u.rights[k] ? "checked" : ""}> ${l}</label>`).join("")}</div>
+    <div class="field"><label>Доступ к договорам</label><label class="chk"><input type="radio" name="sc" value="all" ${u.scope === "all" ? "checked" : ""}> Все договоры компании</label><label class="chk"><input type="radio" name="sc" value="some" ${u.scope !== "all" ? "checked" : ""}> Только выбранные:</label>
+      <div style="padding-left:24px">${S.contracts.map(c => `<label class="chk"><input type="checkbox" name="cs" value="${c.id}" ${u.scope === "all" || u.scope.includes(c.id) ? "checked" : ""}> ${c.id} · ${esc(c.subjects[0].name)}</label>`).join("")}</div></div></form>`,
+    `<button class="btn sec" onclick="closeModal()">Отмена</button><button class="btn" onclick="saveUser('${id || ""}')">${id ? "Сохранить" : "Отправить приглашение"}</button>`);
+  $("#u3").addEventListener("change", e => { const t = ROLE_TPL[e.target.value]; if (t) document.querySelectorAll("[name=rt]").forEach(ch => ch.checked = !!t[ch.value]); });
+}
+function saveUser(id) {
+  const rights = { staff: 0 }; document.querySelectorAll("[name=rt]").forEach(ch => rights[ch.value] = ch.checked ? 1 : 0);
+  const scope = document.querySelector("[name=sc]:checked").value === "all" ? "all" : [...document.querySelectorAll("[name=cs]:checked")].map(x => x.value);
+  if (scope !== "all" && !scope.length) { toast("Выберите договоры", "Или дайте доступ ко всем договорам"); return; }
+  const role = $("#u3").value;
+  if (id) { const u = S.users.find(u => u.id === id); Object.assign(u, { rights, scope, role }); toast("Права обновлены", u.fio); }
+  else {
+    const fio = $("#u1").value.trim(), email = $("#u2").value.trim().toLowerCase();
+    if (!fio || !/\S+@\S+\.\S+/.test(email)) { toast("Заполните ФИО и e-mail"); return; }
+    if (S.users.some(u => u.email === email)) { toast("Такой e-mail уже есть в кабинете"); return; }
+    const u = { id: uid(), fio, short: fio.split(" ").slice(1).join(" ") || fio, email, phone: "", role, owner: false, status: "invited", rights, scope };
+    S.users.push(u); toast("Приглашение отправлено", email);
+    setTimeout(() => { u.status = "active"; notify("sys", fio + " принял приглашение и вошёл в кабинет", "#/company"); save(); render(true); toast("Сотрудник активен", fio + " задал пароль по ссылке"); }, 7000);
+  }
+  save(); closeModal(); render(true);
+}
+
+/* ---------- ПРОФИЛЬ ---------- */
+VIEWS.profile = () => {
+  const u = me(); const n = S.notifSettings;
+  const sw = (k, l) => `<div class="sw"><button class="tg ${n[k] ? "on" : ""}" onclick="S.notifSettings.${k}=!S.notifSettings.${k};save();render(true)" aria-label="${l}"></button>${l}</div>`;
+  const html = `<div class="hd"><div><h1>Профиль</h1><div class="muted">${esc(u.role)} · ${esc(S.company.name)}</div></div><span class="sp"></span><button class="btn sec" onclick="logout()">${ic("out", 'width="15" height="15"')} Выйти</button></div>
+  <div class="grid g2"><div class="card"><h2>Личные данные</h2><div class="field"><label for="pf1">ФИО</label><input class="inp" id="pf1" value="${esc(u.fio)}" readonly></div>
+    <div class="row"><div class="field"><label for="pf2">E-mail</label><input class="inp" id="pf2" value="${esc(u.email)}"></div><div class="field"><label for="pf3">Телефон</label><input class="inp" id="pf3" value="${esc(u.phone)}"></div></div>
+    <button class="btn" onclick="toast('Отправили код подтверждения','Изменения вступят в силу после ввода кода (демо)')">Сохранить</button>
+    <h2 style="margin-top:24px">Пароль</h2><div class="row"><div class="field"><label for="pf4">Текущий</label><input class="inp" id="pf4" type="password"></div><div class="field"><label for="pf5">Новый</label><input class="inp" id="pf5" type="password"></div></div><button class="btn sec" onclick="toast('Пароль изменён','(демо)')">Изменить пароль</button></div>
+    <div class="card"><h2>Уведомления</h2><p class="small muted" style="margin-top:0">О чём сообщать</p>${sw("pay", "Скорый платёж — за 5 дней")}${sw("doc", "Новые документы")}${sw("req", "Статусы запросов")}${sw("ins", "Окончание полисов")}
+      <p class="small muted">Куда</p><div class="sw"><button class="tg on" disabled></button>В кабинете</div>${sw("email", "На e-mail")}<div class="sw"><button class="tg" disabled></button><span class="muted">SMS и push — в развитии</span></div>
+      <h2 style="margin-top:24px">Электронный документооборот</h2><div class="alert ok" style="margin:0">ЭДО подключено: ${esc(S.company.edo.op)}<br>Идентификатор ${S.company.edo.id}</div></div></div>`;
+  return { title: "Профиль", html };
+};
+function logout() { S.session = null; save(); location.hash = "#/login"; render(); }
+
+/* =====================================================================
+   МОДАЛКИ
+   ===================================================================== */
+function openModal(title, body, foot, wide) {
+  $("#ovl").innerHTML = `<div class="ov" onclick="if(event.target===this)closeModal()"><div class="modal ${wide ? "wide" : ""}" role="dialog" aria-modal="true"><div class="mh"><h2>${esc(title)}</h2><button class="x" onclick="closeModal()" aria-label="Закрыть">×</button></div><div class="mb">${body}</div>${foot ? `<div class="mf">${foot}</div>` : ""}</div></div>`;
+}
+function closeModal() { $("#ovl").innerHTML = ""; }
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+function modalAct(cid = "all") {
+  const q = [["I кв. 2026", "2026-01-01", "2026-03-31"], ["II кв. 2026", "2026-04-01", "2026-06-30"], ["9 месяцев 2026", "2026-01-01", "2026-09-30"], ["2025 год", "2025-01-01", "2025-12-31"]];
+  openModal("Акт сверки", `<div class="field"><label for="a1">Договор</label><select class="sel" id="a1">${cOpts(true, cid)}</select></div>
+    <div class="field"><label>Период</label><div class="chips" style="margin-bottom:8px">${q.map(x => `<button type="button" class="chip" onclick="$('#a2').value='${x[1]}';$('#a3').value='${x[2]}'">${x[0]}</button>`).join("")}</div>
+    <div class="row"><input class="inp" id="a2" type="date" value="2026-01-01" min="2024-01-01" max="${iso(TODAY)}"><input class="inp" id="a3" type="date" value="${iso(TODAY)}" min="2024-01-01" max="${iso(TODAY)}"></div></div>
+    <div class="hint">Акт сформирует 1С автоматически. Обычно это пара минут — в демо несколько секунд. Готовый акт появится в «Документах», придёт уведомление.</div>`,
+    `<button class="btn sec" onclick="closeModal()">Отмена</button><button class="btn" onclick="submitAct()">Сформировать</button>`);
+}
+function submitAct() {
+  const cid = $("#a1").value, from = $("#a2").value, to = $("#a3").value;
+  if (!from || !to || from > to) { toast("Проверьте период"); return; }
+  const r = newRequest("act", "Акт сверки с " + d2(from) + " по " + d2(to), cid, { payload: { from, to } });
+  closeModal(); toast("Запрос принят", "Акт сверки формируется в 1С"); location.hash = "#/requests/" + r.id;
+}
+function modalRequest(type = "spravka", cid = "all") {
+  const types = [["spravka", "Справка о задолженности", "автоматически из 1С"], ["spravka2", "Справка об оплаченных платежах", "автоматически из 1С"], ["letter", "Письмо с графиком платежей", "автоматически из 1С"], ["act", "Акт сверки", "автоматически из 1С"], ["originals", "Оригиналы документов", "почтой или ЭДО"], ["other", "Иной запрос", "ответит персональный менеджер"]];
+  openModal("Новый запрос", `<div class="field"><label>Что нужно</label>${types.map(t => `<label class="chk" style="margin:6px 0"><input type="radio" name="rt" value="${t[0]}" ${t[0] === type ? "checked" : ""}> <span><b style="color:var(--navy)">${t[1]}</b> <span class="muted small">· ${t[2]}</span></span></label>`).join("")}</div>
+    <div class="field"><label for="q1">Договор</label><select class="sel" id="q1">${cOpts(true, cid)}</select></div>
+    <div class="field" id="qOther" style="display:none"><label for="q2">Опишите вопрос</label><textarea class="inp" id="q2" rows="3" placeholder="Например: прошу рассчитать сумму досрочного выкупа на 01.12.2026"></textarea><label class="small" style="display:block;margin-top:6px"><input type="file"> Приложить файл</label></div>`,
+    `<button class="btn sec" onclick="closeModal()">Отмена</button><button class="btn" onclick="submitRequest()">Отправить</button>`);
+  const upd = () => { const v = document.querySelector("[name=rt]:checked").value; $("#qOther").style.display = v === "other" ? "" : "none"; };
+  document.querySelectorAll("[name=rt]").forEach(x => x.addEventListener("change", upd)); upd();
+}
+function submitRequest() {
+  const t = document.querySelector("[name=rt]:checked").value, cid = $("#q1").value;
+  if (t === "act") { closeModal(); modalAct(cid); return; }
+  if (t === "originals") { closeModal(); modalOriginals(); return; }
+  let r;
+  if (t === "spravka" || t === "spravka2") r = newRequest("spravka", t === "spravka" ? "Справка о задолженности" : "Справка об оплаченных платежах", cid);
+  else if (t === "letter") r = newRequest("letter", "Письмо с графиком платежей", cid);
+  else { const txt = $("#q2").value.trim(); if (!txt) { toast("Опишите вопрос"); return; } r = newRequest("other", txt.length > 60 ? txt.slice(0, 57) + "…" : txt, cid, { comment: txt }); }
+  closeModal(); toast("Запрос " + r.id + " принят", t === "other" ? "Передан персональному менеджеру" : "Обрабатывается автоматически через 1С"); location.hash = "#/requests/" + r.id;
+}
+function modalOriginals() {
+  const sel = S.invoices.filter(i => dSel.has(i.id));
+  openModal("Запросить оригиналы", `${sel.length ? `<p>Документов выбрано: <b>${sel.length}</b></p><div class="small muted" style="max-height:110px;overflow:auto;margin-bottom:12px">${sel.map(i => i.no + " · " + i.cid).join("<br>")}</div>` : `<div class="field"><label for="o0">Какие документы</label><select class="sel" id="o0"><option>УПД за последний месяц по всем договорам</option><option>УПД за квартал по всем договорам</option><option>Акт сверки за II квартал 2026</option><option>Договор лизинга и график (дубликат)</option></select><div class="small muted" style="margin-top:6px">Или выберите конкретные документы в разделе «Документы → Счета-фактуры».</div></div>`}
+    <div class="field"><label>Как получить</label><label class="chk"><input type="radio" name="ch" value="edo" checked ${S.company.edo.on ? "" : "disabled"}> Через ЭДО <span class="muted small">(${esc(S.company.edo.op)})</span></label><label class="chk"><input type="radio" name="ch" value="post"> Почтой России на юридический адрес</label></div>`,
+    `<button class="btn sec" onclick="closeModal()">Отмена</button><button class="btn" onclick="submitOriginals()">Запросить</button>`);
+}
+function submitOriginals() {
+  const sel = S.invoices.filter(i => dSel.has(i.id)); const ch = document.querySelector("[name=ch]:checked").value;
+  const cids = [...new Set(sel.map(i => i.cid))];
+  const title = sel.length ? "Оригиналы: " + sel.length + " " + plural(sel.length, "документ", "документа", "документов") : "Оригиналы: " + $("#o0").value;
+  const r = newRequest("originals", title, cids.length === 1 ? cids[0] : "all", { channel: ch });
+  dSel.clear(); closeModal(); toast("Запрос " + r.id + " принят", ch === "edo" ? "Документы придут через ЭДО" : "Отправим оригиналы почтой"); location.hash = "#/requests/" + r.id;
+}
+function viewInvoice(id) {
+  const i = S.invoices.find(x => x.id === id);
+  openModal(i.no, `<div class="doc"><h3>УНИВЕРСАЛЬНЫЙ ПЕРЕДАТОЧНЫЙ ДОКУМЕНТ ${i.no} от ${d2(i.date)}</h3><p>Продавец: ООО «Восток-лизинг» (демо-реквизиты)<br>Покупатель: ${esc(S.company.name)}, ИНН ${S.company.inn}<br>Основание: договор лизинга ${i.cid}</p>
+    <table><tr><th>Наименование</th><th>Сумма без НДС</th><th>НДС ${VAT}%</th><th>Всего</th></tr><tr><td>Лизинговая услуга за ${MONTHS[new Date(i.period).getMonth()]} ${new Date(i.period).getFullYear()}</td><td style="text-align:right">${rub(Math.round((i.amount - i.vat) * 100) / 100)}</td><td style="text-align:right">${rub(i.vat)}</td><td style="text-align:right"><b>${rub(i.amount)}</b></td></tr></table>
+    <p class="small muted" style="margin-top:12px">Документ подписан ЭП Восток-лизинга и отправлен через ЭДО (демо).</p></div>`,
+    `<button class="btn sec" onclick="closeModal();dSel.clear();dSel.add('${i.id}');modalOriginals()">Запросить оригинал</button><button class="btn" onclick="toast('Скачивание','${i.no}.pdf (демо)')">${ic("down", 'width="15" height="15"')} Скачать PDF</button>`, true);
+}
+function viewAct(id) {
+  const a = S.acts.find(x => x.id === id); a.fresh = false; save();
+  const cs = a.cid === "all" ? myContracts() : [contract(a.cid)];
+  const rows = cs.map(c => { const due = schedOf(c).pays.filter(p => p.date >= a.from && p.date <= a.to).reduce((s, p) => s + p.amount, 0); const pd = S.payments.filter(p => p.cid === c.id && p.date >= a.from && p.date <= a.to).reduce((s, p) => s + p.amount, 0); return `<tr><td>${c.id}</td><td style="text-align:right">${rub(due)}</td><td style="text-align:right">${rub(pd)}</td><td style="text-align:right">${rub(Math.round((pd - due) * 100) / 100)}</td></tr>`; }).join("");
+  openModal("Акт сверки", `<div class="doc"><h3>АКТ СВЕРКИ ВЗАИМНЫХ РАСЧЁТОВ</h3><p style="text-align:center">за период с ${d2(a.from)} по ${d2(a.to)}<br>между ООО «Восток-лизинг» и ${esc(S.company.name)}</p><table><tr><th>Договор</th><th>Начислено</th><th>Оплачено</th><th>Сальдо за период</th></tr>${rows}</table><p class="small muted" style="margin-top:12px">Сформирован 1С ${d2(a.date)} · подписан ЭП Восток-лизинга (демо)</p></div>`,
+    `<button class="btn" onclick="toast('Скачивание','Акт сверки.pdf (демо)')">${ic("down", 'width="15" height="15"')} Скачать PDF</button>`, true);
+}
+function viewScan(title) {
+  openModal(title, `<div class="doc" style="min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:repeating-linear-gradient(0deg,#fff,#fff 22px,#F3F6F9 22px,#F3F6F9 23px)"><div class="ic" style="width:56px;height:56px">${ic("docs", 'width="28" height="28"')}</div><p style="text-align:center;margin:14px 0 0"><b>${esc(title)}</b><br><span class="muted small">Скан документа (демо). В рабочем кабинете здесь откроется PDF.</span></p></div>`,
+    `<button class="btn" onclick="toast('Скачивание','PDF (демо)')">${ic("down", 'width="15" height="15"')} Скачать</button>`, true);
+}
+
+/* =====================================================================
+   ДЕМО-ПАНЕЛЬ
+   ===================================================================== */
+let demoOpen = false;
+function renderDemo() {
+  const s = S.sync; const inQ = S.jobs.length;
+  $("#demo").innerHTML = `${demoOpen ? `<div class="pn"><h3>Демо-режим</h3>
+    <div class="sw"><button class="tg ${s.online ? "on" : "off-red"}" onclick="toggle1C()" aria-label="Связь с 1С"></button><div><b>${s.online ? "1С на связи" : "1С недоступна"}</b><div class="muted">Выключите, чтобы увидеть работу при сбое</div></div></div>
+    <div class="muted" style="margin:8px 0">Заданий в очереди обмена: <b>${inQ}</b></div>
+    ${S.session ? `<div class="field" style="margin-top:10px"><label>Войти как</label><div class="chips">${S.users.filter(u => u.status === "active").map(u => `<button class="chip ${S.session.uid === u.id ? "on" : ""}" onclick="S.session.uid='${u.id}';save();render()">${esc(u.role)}</button>`).join("")}</div></div>` : ""}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn sec sm" onclick="if(confirm('Вернуть все демо-данные к исходному состоянию?')){try{localStorage.removeItem(KEY)}catch(e){};S=initialState();for(const k in sched)delete sched[k];dSel.clear();location.hash='#/login';render()}">Сбросить демо</button>${S.session ? `<button class="btn sec sm" onclick="logout()">Экран входа</button>` : ""}</div>
+    <p class="muted" style="margin:10px 0 0">Все данные вымышленные. Обмен с 1С имитируется в браузере.</p></div>` : ""}
+    <button class="fab" onclick="demoOpen=!demoOpen;renderDemo()"><span class="dot ${s.online ? (inQ ? "busy" : "") : "off"}"></span>Демо${inQ ? " · " + inQ : ""}</button>`;
+}
+function toggle1C() {
+  S.sync.online = !S.sync.online; save();
+  if (S.sync.online) { toast("Связь с 1С восстановлена", "Отправляем накопленные запросы и получаем изменения"); doSync(true); }
+  else toast("1С недоступна", "Кабинет продолжает работать на сохранённых данных");
+  render(true);
+}
+
+/* ---------- старт ---------- */
+// ?as=u1 / ?as=u2 — сразу войти под пользователем (для демонстрации и прямых ссылок)
+{ const as = new URLSearchParams(location.search).get("as"); if (as && S.users.some(u => u.id === as)) { S.session = { uid: as }; save(); } }
+window.addEventListener("hashchange", () => { closeModal(); render(); });
+if (!location.hash) location.hash = S.session ? "#/home" : "#/login";
+render();
+setInterval(tick, 1000);
+</script>
+</body>
+</html>
